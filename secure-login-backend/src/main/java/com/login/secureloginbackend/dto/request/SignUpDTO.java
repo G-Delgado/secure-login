@@ -23,10 +23,6 @@ public record SignUpDTO(
 
         @NotNull
         @NotBlank
-        String password,
-
-        @NotNull
-        @NotBlank
-        String phoneNumber
+        String password
 ) {
 }

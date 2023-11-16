@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,22 +40,21 @@ public class UserService {
     }
 
     private Optional<UserModel> validateUserExists(String email){
-        Optional<UserModel> user = userRepository.findUserModelByEmail(email);
-        if(user.isEmpty()){
-            throw new RuntimeException("User not found");
-        }
-        return user;
+        return userRepository.findUserModelByEmail(email);
     }
 
     public TokenDTO login(LoginDTO loginDTO) {
         boolean existUser = validateUserExists(loginDTO.email()).isPresent();
+        if (!existUser) {
+            throw new RuntimeException("User not found");
+        }
 
-        if(existUser){
             //Validar la contraseña
             //Recuperar el token
             //Validar el token
             //Retornar el token
-        }
+            //Actualizar el lastLogin
+
 
         return TokenDTO.builder().token("token").build();
     }
@@ -67,6 +68,7 @@ public class UserService {
         UserModel userModel = userMapper.fromUserDTO(user);
         userModel.setUserId(UUID.randomUUID());
         userModel.setAdmin(!validateAdminExists());
+        userModel.setLastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         //Codificar la contraseña
         UserResponseDTO userResponseDTO = userMapper.fromUser(userRepository.save(userModel));
         userResponseDTO.setUserId(userModel.getUserId());

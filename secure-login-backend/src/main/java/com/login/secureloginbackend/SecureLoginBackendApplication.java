@@ -7,6 +7,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 @SpringBootApplication
 public class SecureLoginBackendApplication {
 
@@ -18,39 +22,44 @@ public class SecureLoginBackendApplication {
 	CommandLineRunner commandLineRunner(UserRepository userRepository){
 
 		UserModel admin = UserModel.builder()
+				.userId(UUID.randomUUID())
 				.firstName("Admin")
 				.lastName("Admin")
 				.email("admin@hotmail.com")
 				.password("admin")
-				.phoneNumber("3154620529")
 				.isAdmin(true)
+				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
+
 				.build();
 
 		UserModel user1 = UserModel.builder()
+				.userId(UUID.randomUUID())
 				.firstName("John")
 				.lastName("Doe")
 				.email("jd@hotmail.com")
 				.password("123456")
-				.phoneNumber("3154620528")
 				.isAdmin(false)
+				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
 
 		UserModel user2 = UserModel.builder()
+				.userId(UUID.randomUUID())
 				.firstName("Karla")
 				.lastName("Doe")
 				.email("kd@hotmail.com")
 				.password("admin123")
-				.phoneNumber("3185372546")
 				.isAdmin(false)
+				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
 
 		UserModel user3 = UserModel.builder()
+				.userId(UUID.randomUUID())
 				.firstName("Carlos")
 				.lastName("Doe")
 				.email("cd@hotmail.com")
 				.password("admin123456")
-				.phoneNumber("3185372545")
 				.isAdmin(false)
+				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
 
 		return args -> {
