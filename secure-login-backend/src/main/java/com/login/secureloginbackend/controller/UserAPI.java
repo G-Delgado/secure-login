@@ -2,6 +2,7 @@ package com.login.secureloginbackend.controller;
 
 import com.login.secureloginbackend.dto.request.LoginDTO;
 import com.login.secureloginbackend.dto.request.SignUpDTO;
+import com.login.secureloginbackend.dto.response.TokenDTO;
 import com.login.secureloginbackend.dto.response.UserResponseDTO;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,16 +13,16 @@ public interface UserAPI {
 
 
     @PostMapping("/login")
-    UserResponseDTO login(@Valid @RequestBody LoginDTO loginDTO);
+    TokenDTO login(@Valid @RequestBody LoginDTO loginDTO);
 
     @PostMapping("/signup")
     UserResponseDTO signUp(@Valid @RequestBody SignUpDTO signUpDTO);
 
     @GetMapping("/user/{email}")
-    UserResponseDTO getUser();
+    UserResponseDTO getUser(@PathVariable String email);
 
     @DeleteMapping("/user/{email}")
-    void deleteUser();
+    void deleteUser(@PathVariable String email);
 
     @GetMapping("/users")
     void getAllUsers();

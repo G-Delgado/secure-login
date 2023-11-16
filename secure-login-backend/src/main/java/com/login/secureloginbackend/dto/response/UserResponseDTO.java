@@ -1,16 +1,19 @@
 package com.login.secureloginbackend.dto.response;
 
 import lombok.Builder;
+import lombok.Data;
 
 import java.util.UUID;
 
+@Data
 @Builder
-public record UserResponseDTO(UUID userId,
-                              String firstName,
-                              String lastName,
-                              String email,
-                              String password,
-                              String phoneNumber) {
+public class UserResponseDTO {
+    private UUID userId;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+    private String phoneNumber;
 
 
 }
