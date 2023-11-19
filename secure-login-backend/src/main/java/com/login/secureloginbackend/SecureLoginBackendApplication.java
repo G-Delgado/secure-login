@@ -2,10 +2,12 @@ package com.login.secureloginbackend;
 
 import com.login.secureloginbackend.model.UserModel;
 import com.login.secureloginbackend.repository.UserRepository;
+import lombok.SneakyThrows;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import com.login.secureloginbackend.util.PasswordEncodeService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +20,7 @@ public class SecureLoginBackendApplication {
 		SpringApplication.run(SecureLoginBackendApplication.class, args);
 	}
 
+	@SneakyThrows
 	@Bean
 	CommandLineRunner commandLineRunner(UserRepository userRepository){
 
@@ -26,7 +29,7 @@ public class SecureLoginBackendApplication {
 				.firstName("Admin")
 				.lastName("Admin")
 				.email("admin@hotmail.com")
-				.password("admin")
+				.password(PasswordEncodeService.encodePassword("admin"))
 				.isAdmin(true)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 
@@ -37,7 +40,7 @@ public class SecureLoginBackendApplication {
 				.firstName("John")
 				.lastName("Doe")
 				.email("jd@hotmail.com")
-				.password("123456")
+				.password(PasswordEncodeService.encodePassword("123456"))
 				.isAdmin(false)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
@@ -47,7 +50,7 @@ public class SecureLoginBackendApplication {
 				.firstName("Karla")
 				.lastName("Doe")
 				.email("kd@hotmail.com")
-				.password("admin123")
+				.password(PasswordEncodeService.encodePassword("admin123"))
 				.isAdmin(false)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
@@ -57,7 +60,7 @@ public class SecureLoginBackendApplication {
 				.firstName("Carlos")
 				.lastName("Doe")
 				.email("cd@hotmail.com")
-				.password("admin123456")
+				.password(PasswordEncodeService.encodePassword("admin123456"))
 				.isAdmin(false)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
