@@ -1,4 +1,6 @@
 package com.login.secureloginbackend.util;
+import org.springframework.context.annotation.Bean;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.math.BigInteger;
@@ -6,9 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-public class passwordEncodeService {
+public class PasswordEncodeService {
 
-    public String encodePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static String encodePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         //TODO probar con la cantidad recomendad de iteraciones:1,300,000
         int iterations = 1000;
         char[] chars = password.toCharArray();
@@ -26,7 +28,7 @@ public class passwordEncodeService {
         return iterations+ ":" + toHex(salt) + ":" + toHex(hash);
     }
 
-    private byte[] genSalt() throws NoSuchAlgorithmException {
+    private static byte[] genSalt() throws NoSuchAlgorithmException {
         // SHA1PRNG nombre del algoritmo RNG (Random Number Generator) que genera el secureRandom
         SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[16];
@@ -36,7 +38,7 @@ public class passwordEncodeService {
         return salt;
     }
 
-    private String toHex(byte[] bytes) {
+    private static String toHex(byte[] bytes) {
         //convierte un arreglo de bytes a un numero hexadecimal positivo
         BigInteger bi = new BigInteger(1, bytes);
         //convierte el numero hexadecimal a string
@@ -52,7 +54,7 @@ public class passwordEncodeService {
         }
     }
 
-    public boolean passwordVerify(String password, String storedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static boolean passwordVerify(String password, String storedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
         //se separa el storedPassword en sus componentes
         String[] parts = storedPassword.split(":");
         //se obtiene el numero de iteraciones
@@ -84,7 +86,7 @@ public class passwordEncodeService {
 
     }
 
-    private byte[] fromHex(String hex) {
+    private static byte[] fromHex(String hex) {
         //convierte un numero hexadecimal a un arreglo de bytes
         byte[] bytes = new byte[hex.length() / 2];
         //se recorre el string hex y se convierte cada par de caracteres a un byte

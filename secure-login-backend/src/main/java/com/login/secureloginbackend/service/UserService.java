@@ -14,17 +14,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.login.secureloginbackend.util.PasswordEncodeService;
 
 @Service
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncodeService passwordEncoderService;
 
 
     private boolean validateAdminExists(){
@@ -50,10 +54,17 @@ public class UserService {
         }
 
             //Validar la contraseña
-            //Recuperar el token
-            //Validar el token
-            //Retornar el token
-            //Actualizar el lastLogin
+        try {
+            if(!PasswordEncodeService.passwordVerify(loginDTO.password(), validateUserExists(loginDTO.email()).get().getPassword())){
+                throw new RuntimeException("Password incorrect");
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+        //Recuperar el token
+        //Validar el token
+        //Retornar el token
+        //Actualizar el lastLogin
 
 
         return TokenDTO.builder().token("token").build();
@@ -70,6 +81,11 @@ public class UserService {
         userModel.setAdmin(!validateAdminExists());
         userModel.setLastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         //Codificar la contraseña
+        try {
+            userModel.setPassword(PasswordEncodeService.encodePassword(user.password()));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
         UserResponseDTO userResponseDTO = userMapper.fromUser(userRepository.save(userModel));
         userResponseDTO.setUserId(userModel.getUserId());
 
