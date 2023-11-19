@@ -28,7 +28,7 @@ import com.login.secureloginbackend.util.PasswordEncodeService;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncodeService passwordEncoderService;
+
 
 
     private boolean validateAdminExists(){
