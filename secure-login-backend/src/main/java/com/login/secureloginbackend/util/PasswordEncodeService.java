@@ -1,5 +1,7 @@
 package com.login.secureloginbackend.util;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
