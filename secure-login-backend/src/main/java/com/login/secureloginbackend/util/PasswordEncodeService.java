@@ -1,6 +1,8 @@
 package com.login.secureloginbackend.util;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKeyFactory;
@@ -10,7 +12,17 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
+
+
 public class PasswordEncodeService {
+
+    @Getter
+    private static final PasswordEncodeService instance = new PasswordEncodeService();
+
+    private PasswordEncodeService() {
+        // private constructor to prevent instantiation
+    }
+
 
     public static String encodePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         //TODO probar con la cantidad recomendad de iteraciones:1,300,000
