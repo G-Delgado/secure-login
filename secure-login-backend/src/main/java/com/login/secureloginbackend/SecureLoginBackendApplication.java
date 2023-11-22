@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @SpringBootApplication
-@ComponentScan("com.login.secureloginbackend.mapper")
+
 public class SecureLoginBackendApplication {
 
 	public static void main(String[] args) {
@@ -32,7 +32,6 @@ public class SecureLoginBackendApplication {
 				.lastName("Admin")
 				.email("admin@hotmail.com")
 				.password(PasswordEncodeService.encodePassword("admin"))
-				.isAdmin(true)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 
 				.build();
@@ -43,7 +42,6 @@ public class SecureLoginBackendApplication {
 				.lastName("Doe")
 				.email("jd@hotmail.com")
 				.password(PasswordEncodeService.encodePassword("123456"))
-				.isAdmin(false)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
 
@@ -53,7 +51,6 @@ public class SecureLoginBackendApplication {
 				.lastName("Doe")
 				.email("kd@hotmail.com")
 				.password(PasswordEncodeService.encodePassword("admin123"))
-				.isAdmin(false)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
 
@@ -63,7 +60,6 @@ public class SecureLoginBackendApplication {
 				.lastName("Doe")
 				.email("cd@hotmail.com")
 				.password(PasswordEncodeService.encodePassword("admin123456"))
-				.isAdmin(false)
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
 

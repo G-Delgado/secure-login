@@ -6,10 +6,15 @@ import com.login.secureloginbackend.dto.request.SignUpDTO;
 import com.login.secureloginbackend.dto.response.TokenDTO;
 import com.login.secureloginbackend.dto.response.UserResponseDTO;
 import com.login.secureloginbackend.mapper.UserMapper;
+import com.login.secureloginbackend.model.Role;
+import com.login.secureloginbackend.model.SecurityUser;
 import com.login.secureloginbackend.model.UserModel;
 import com.login.secureloginbackend.repository.UserRepository;
+import com.login.secureloginbackend.service.security.TokenService;
 import lombok.AllArgsConstructor;
 
+import org.antlr.v4.runtime.Token;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +32,9 @@ import com.login.secureloginbackend.util.PasswordEncodeService;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    @Autowired
     private final UserMapper userMapper;
+    private final TokenService tokenService;
 
 
 
@@ -35,27 +42,19 @@ public class UserService {
         return userRepository.findUserModelAdmin().isPresent();
     }
 
-    private boolean validateIsAdmin(String email){
-        Optional<UserModel> user =  userRepository.findUserModelByEmail(email);
-        if(user.isEmpty()){
-            throw new RuntimeException("User not found");
-        }
-        return user.get().isAdmin();
-    }
-
     private Optional<UserModel> validateUserExists(String email){
         return userRepository.findUserModelByEmail(email);
     }
 
     public TokenDTO login(LoginDTO loginDTO) {
-        boolean existUser = validateUserExists(loginDTO.email()).isPresent();
-        if (!existUser) {
+        Optional<UserModel> existUser = validateUserExists(loginDTO.email());
+        if (existUser.isEmpty()) {
             throw new RuntimeException("User not found");
         }
 
             //Validar la contraseña
         try {
-            if(!PasswordEncodeService.passwordVerify(loginDTO.password(), validateUserExists(loginDTO.email()).get().getPassword())){
+            if(!PasswordEncodeService.passwordVerify(loginDTO.password(), existUser.get().getPassword())){
                 throw new RuntimeException("Password incorrect");
             }
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -70,7 +69,7 @@ public class UserService {
         return TokenDTO.builder().token("token").build();
     }
 
-    public UserResponseDTO save(SignUpDTO user) {
+    public TokenDTO save(SignUpDTO user) {
         boolean existUser = validateUserExists(user.email()).isPresent();
         if (existUser) {
             throw new RuntimeException("User already exists");
@@ -78,18 +77,22 @@ public class UserService {
 
         UserModel userModel = userMapper.fromUserDTO(user);
         userModel.setUserId(UUID.randomUUID());
-        userModel.setAdmin(!validateAdminExists());
+        userModel.setRole(validateAdminExists()? Role.USER : Role.ADMIN);
         userModel.setLastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
+
         //Codificar la contraseña
         try {
             userModel.setPassword(PasswordEncodeService.encodePassword(user.password()));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
-        UserResponseDTO userResponseDTO = userMapper.fromUser(userRepository.save(userModel));
-        userResponseDTO.setUserId(userModel.getUserId());
 
-        return userResponseDTO;
+        userRepository.save(userModel);
+
+        return TokenDTO.builder()
+                .token(tokenService.generateToken(new SecurityUser(userModel)))
+                .email(userModel.getEmail())
+                .build();
     }
 
     public UserResponseDTO getUser(String email) {

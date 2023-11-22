@@ -24,7 +24,7 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public UserResponseDTO signUp(SignUpDTO signUpDTO) {
+    public TokenDTO signUp(SignUpDTO signUpDTO) {
         return userService.save(signUpDTO);
     }
 

@@ -15,11 +15,11 @@ import java.util.List;
 public interface UserAPI {
 
 
-    @PostMapping("/login")
+    @PostMapping()
     TokenDTO login(@Valid @RequestBody LoginDTO loginDTO);
 
     @PostMapping("/signup")
-    UserResponseDTO signUp(@Valid @RequestBody SignUpDTO signUpDTO);
+    TokenDTO signUp(@Valid @RequestBody SignUpDTO signUpDTO);
 
     @GetMapping("/user/{email}")
     UserResponseDTO getUser(@PathVariable String email);
