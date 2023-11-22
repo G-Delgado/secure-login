@@ -8,12 +8,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import com.login.secureloginbackend.util.PasswordEncodeService;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @SpringBootApplication
+@ComponentScan("com.login.secureloginbackend.mapper")
 public class SecureLoginBackendApplication {
 
 	public static void main(String[] args) {
