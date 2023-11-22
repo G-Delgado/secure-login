@@ -15,7 +15,7 @@ import java.util.List;
 public interface UserAPI {
 
 
-    @PostMapping()
+    @PostMapping("/login")
     TokenDTO login(@Valid @RequestBody LoginDTO loginDTO);
 
     @PostMapping("/signup")

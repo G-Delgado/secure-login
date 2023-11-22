@@ -11,22 +11,21 @@ import com.login.secureloginbackend.model.SecurityUser;
 import com.login.secureloginbackend.model.UserModel;
 import com.login.secureloginbackend.repository.UserRepository;
 import com.login.secureloginbackend.service.security.TokenService;
+import com.login.secureloginbackend.util.PasswordEncodeService;
 import lombok.AllArgsConstructor;
-
-import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import com.login.secureloginbackend.util.PasswordEncodeService;
+
 
 @Service
 @AllArgsConstructor
@@ -35,6 +34,8 @@ public class UserService {
     @Autowired
     private final UserMapper userMapper;
     private final TokenService tokenService;
+    private final PasswordEncodeService encoder;
+    private final AuthenticationManager authenticationManager;
 
 
 
@@ -47,26 +48,13 @@ public class UserService {
     }
 
     public TokenDTO login(LoginDTO loginDTO) {
-        Optional<UserModel> existUser = validateUserExists(loginDTO.email());
-        if (existUser.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-            //Validar la contraseña
-        try {
-            if(!PasswordEncodeService.passwordVerify(loginDTO.password(), existUser.get().getPassword())){
-                throw new RuntimeException("Password incorrect");
-            }
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
-        //Recuperar el token
-        //Validar el token
-        //Retornar el token
-        //Actualizar el lastLogin
-
-
-        return TokenDTO.builder().token("token").build();
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.email(),loginDTO.password()));
+        UserDetails user = new SecurityUser(userRepository.findUserModelByEmail(loginDTO.email()).orElseThrow());
+        String token = tokenService.generateToken(user);
+        return TokenDTO.builder()
+                .token(token)
+                .email(loginDTO.email())
+                .build();
     }
 
     public TokenDTO save(SignUpDTO user) {
@@ -81,12 +69,9 @@ public class UserService {
         userModel.setLastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
 
         //Codificar la contraseña
-        try {
-            userModel.setPassword(PasswordEncodeService.encodePassword(user.password()));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
+        userModel.setPassword(encoder.encode(user.password()));
 
+        //Guardar el usuario
         userRepository.save(userModel);
 
         return TokenDTO.builder()

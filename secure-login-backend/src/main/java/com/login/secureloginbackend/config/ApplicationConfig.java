@@ -1,6 +1,7 @@
 package com.login.secureloginbackend.config;
 
 import com.login.secureloginbackend.service.security.UserManagementService;
+import com.login.secureloginbackend.util.PasswordEncodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,6 @@ public class ApplicationConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new PasswordEncodeService();
     }
 }

@@ -2,6 +2,7 @@ package com.login.secureloginbackend.util;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -14,35 +15,75 @@ import java.security.spec.InvalidKeySpecException;
 
 
 
-public class PasswordEncodeService {
+public class PasswordEncodeService  implements PasswordEncoder {
 
-    @Getter
-    private static final PasswordEncodeService instance = new PasswordEncodeService();
+    @Override
+    public String encode(CharSequence rawPassword) {
+        try{
+            //TODO probar con la cantidad recomendad de iteraciones:1,300,000
+            int iterations = 1300000;
+            char[] chars = rawPassword.toString().toCharArray();
+            byte[] salt = genSalt();
+            //PBKDF2WithHmacSHA1 algoritmo de encriptacion
+            //PBEKeySpec especificaciones para la encriptacion, se le pasa la contraseña, el salt, la cantidad de iteraciones y el tamaño de la llave
+            PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+            //se crea una instancia de la clase SecretKeyFactory que se encarga de generar la llave
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
-    private PasswordEncodeService() {
-        // private constructor to prevent instantiation
+            //se genera la llave
+            byte[] hash = skf.generateSecret(spec).getEncoded();
+
+
+            return iterations+ ":" + toHex(salt) + ":" + toHex(hash);
+
+        }catch (NoSuchAlgorithmException | InvalidKeySpecException exception){
+            System.out.println(exception.getMessage());
+        }
+
+        return "Error";
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        try{
+            //se separa el storedPassword en sus componentes
+            String[] parts = encodedPassword.split(":");
+            //se obtiene el numero de iteraciones
+            int iterations = Integer.parseInt(parts[0]);
+            //se obtiene el salt
+            byte[] salt = fromHex(parts[1]);
+            //se obtiene el hash
+            byte[] hash = fromHex(parts[2]);
+
+            //se crea una instancia de la clase PBEKeySpec que se encarga de generar la llave
+            PBEKeySpec spec = new PBEKeySpec(rawPassword.toString().toCharArray(), salt, iterations, hash.length * 8);
+            //se crea una instancia de la clase SecretKeyFactory que se encarga de generar la llave
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            //se genera la llave
+            byte[] testHash = skf.generateSecret(spec).getEncoded();
+
+            //se comparan los hash
+            //esto es un XOR bitwise
+            int diff = hash.length ^ testHash.length;
+
+            //se recorre el arreglo de bytes y se hace un XOR bitwise
+            //esto se hace con el fin de protegernos contra ataques de timing
+            for(int i = 0; i < hash.length && i < testHash.length; i++){
+                diff |= hash[i] ^ testHash[i];
+            }
+
+            //si los hash son iguales, diff es 0
+            return diff == 0;
+        }catch (NoSuchAlgorithmException | InvalidKeySpecException exception){
+            System.out.println(exception.getMessage());
+        }
+
+        return false;
     }
 
 
-    public static String encodePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        //TODO probar con la cantidad recomendad de iteraciones:1,300,000
-        int iterations = 1300000;
-        char[] chars = password.toCharArray();
-        byte[] salt = genSalt();
-        //PBKDF2WithHmacSHA1 algoritmo de encriptacion
-        //PBEKeySpec especificaciones para la encriptacion, se le pasa la contraseña, el salt, la cantidad de iteraciones y el tamaño de la llave
-        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
-        //se crea una instancia de la clase SecretKeyFactory que se encarga de generar la llave
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
-        //se genera la llave
-        byte[] hash = skf.generateSecret(spec).getEncoded();
-
-
-        return iterations+ ":" + toHex(salt) + ":" + toHex(hash);
-    }
-
-    private static byte[] genSalt() throws NoSuchAlgorithmException {
+    private  byte[] genSalt() throws NoSuchAlgorithmException {
         // SHA1PRNG nombre del algoritmo RNG (Random Number Generator) que genera el secureRandom
         SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[16];
@@ -52,7 +93,7 @@ public class PasswordEncodeService {
         return salt;
     }
 
-    private static String toHex(byte[] bytes) {
+    private  String toHex(byte[] bytes) {
         //convierte un arreglo de bytes a un numero hexadecimal positivo
         BigInteger bi = new BigInteger(1, bytes);
         //convierte el numero hexadecimal a string
@@ -68,39 +109,8 @@ public class PasswordEncodeService {
         }
     }
 
-    public static boolean passwordVerify(String password, String storedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        //se separa el storedPassword en sus componentes
-        String[] parts = storedPassword.split(":");
-        //se obtiene el numero de iteraciones
-        int iterations = Integer.parseInt(parts[0]);
-        //se obtiene el salt
-        byte[] salt = fromHex(parts[1]);
-        //se obtiene el hash
-        byte[] hash = fromHex(parts[2]);
 
-        //se crea una instancia de la clase PBEKeySpec que se encarga de generar la llave
-        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, hash.length * 8);
-        //se crea una instancia de la clase SecretKeyFactory que se encarga de generar la llave
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        //se genera la llave
-        byte[] testHash = skf.generateSecret(spec).getEncoded();
-
-        //se comparan los hash
-        //esto es un XOR bitwise
-        int diff = hash.length ^ testHash.length;
-
-        //se recorre el arreglo de bytes y se hace un XOR bitwise
-        //esto se hace con el fin de protegernos contra ataques de timing
-        for(int i = 0; i < hash.length && i < testHash.length; i++){
-            diff |= hash[i] ^ testHash[i];
-        }
-
-        //si los hash son iguales, diff es 0
-        return diff == 0;
-
-    }
-
-    private static byte[] fromHex(String hex) {
+    private  byte[] fromHex(String hex) {
         //convierte un numero hexadecimal a un arreglo de bytes
         byte[] bytes = new byte[hex.length() / 2];
         //se recorre el string hex y se convierte cada par de caracteres a un byte
@@ -111,4 +121,6 @@ public class PasswordEncodeService {
         //se retorna el arreglo de bytes
         return bytes;
     }
+
+
 }
