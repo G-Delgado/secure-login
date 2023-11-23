@@ -20,7 +20,7 @@ public class PasswordEncodeService  implements PasswordEncoder {
     @Override
     public String encode(CharSequence rawPassword) {
         try{
-            //TODO probar con la cantidad recomendad de iteraciones:1,300,000
+            //TODO probar con la cantidad recomendada de iteraciones:1,300,000
             int iterations = 100;
             char[] chars = rawPassword.toString().toCharArray();
             byte[] salt = genSalt();

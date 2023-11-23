@@ -86,7 +86,7 @@ public class UserService {
         return userMapper.fromUser(userRepository.findUserModelByEmail(email).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    private boolean validateUserRole(String token){
+    public boolean validateUserRole(String token){
         String userRole = tokenService.getClaim(token,Claims::getSubject);
         return userRole.equals("ADMIN");
     }

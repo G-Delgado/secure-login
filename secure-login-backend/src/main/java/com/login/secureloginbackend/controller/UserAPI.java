@@ -36,5 +36,7 @@ public interface UserAPI {
     @GetMapping("/users")
     List<UserResponseDTO> getAllUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
+    @GetMapping("/role")
+    ResponseEntity<Boolean> isAdmin(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }
 

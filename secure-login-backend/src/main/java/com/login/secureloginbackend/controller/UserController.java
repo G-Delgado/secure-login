@@ -8,7 +8,9 @@ import com.login.secureloginbackend.dto.response.UserResponseDTO;
 import com.login.secureloginbackend.service.UserService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -51,6 +53,11 @@ public class UserController implements UserAPI {
         //Necesita ser admin
         return userService.getAllUsers(token);
 
+    }
+
+    @Override
+    public ResponseEntity<Boolean> isAdmin(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return ResponseEntity.ok(userService.validateUserRole(token));
     }
 
 
