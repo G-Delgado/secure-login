@@ -5,6 +5,7 @@ import com.login.secureloginbackend.dto.request.LoginDTO;
 import com.login.secureloginbackend.dto.request.SignUpDTO;
 import com.login.secureloginbackend.dto.response.TokenDTO;
 import com.login.secureloginbackend.dto.response.UserResponseDTO;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +28,13 @@ public interface UserAPI {
     UserResponseDTO getUser(@PathVariable String email);
 
     @DeleteMapping("/user/{email}")
-    ResponseEntity<String> deleteUser(@PathVariable String email);
+    ResponseEntity<String> deleteUser(@PathVariable String email,@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @PatchMapping("/user/changePassword")
-    UserResponseDTO changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO);
+    UserResponseDTO changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO,@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @GetMapping("/users")
-    List<UserResponseDTO> getAllUsers();
-
+    List<UserResponseDTO> getAllUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
 }
+

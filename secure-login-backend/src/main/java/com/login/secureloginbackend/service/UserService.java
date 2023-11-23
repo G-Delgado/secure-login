@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import io.jsonwebtoken.Claims;
 
 
 @Service
@@ -85,31 +86,59 @@ public class UserService {
         return userMapper.fromUser(userRepository.findUserModelByEmail(email).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    public ResponseEntity<String> deleteUser(String email) {
-        //Para hacer esto necestita ser admin
-        userRepository.delete(userRepository.findUserModelByEmail(email).orElseThrow(() -> new RuntimeException("User not found")));
+    private boolean validateUserRole(String token){
+        String userRole = tokenService.getClaim(token,Claims::getSubject);
+        return userRole.equals("ADMIN");
+    }
 
+    public ResponseEntity<String> deleteUser(String email, String token) {
+        //Para hacer esto necestita ser admin
+        if (!validateUserRole(token)){
+            throw new RuntimeException("User not authorized");
+        }
+        userRepository.delete(userRepository.findUserModelByEmail(email).orElseThrow(() -> new RuntimeException("User not found")));
         return ResponseEntity.ok().body("User deleted");
 
     }
 
+    private boolean validateUserOwner(String token, String email){
+        String userEmail = tokenService.getClaim(token,Claims::getSubject);
+        return userEmail.equals(email);
+    }
+
     @Transactional
-    public UserResponseDTO changePassword(ChangePasswordDTO changePasswordDTO) {
+    public UserResponseDTO changePassword(ChangePasswordDTO changePasswordDTO, String token) {
         //Para cambiar la de cualquiera necestia ser admin
-        //Hay que validar si quien mando la request es admin, sino solo puede cambiar su contraseña
+
+        if (!validateUserRole(token) && !validateUserOwner(token,changePasswordDTO.email())){
+            //Si no es admin y tampoco es el propietario del usuario
+            throw new RuntimeException("User not authorized");
+        }
+
         Optional<UserModel> user = validateUserExists(changePasswordDTO.email());
         if(user.isEmpty()){
             throw new RuntimeException("User not found to change the password");
         }
         //Codificar la contraseña
-        user.ifPresent(userModel -> userModel.setPassword(changePasswordDTO.newPassword()));
-        userRepository.updatePassword(changePasswordDTO.email(), user.get().getPassword());
+        user.ifPresent(userModel -> userModel.setPassword(encoder.encode(changePasswordDTO.newPassword())));
+
+        if (!validateUserRole(token) && validateUserOwner(token,changePasswordDTO.email())){
+            //Si no es admin y es el propietario del usuario
+            userRepository.updatePassword(changePasswordDTO.email(), user.get().getPassword());
+        }
+
+        if (validateUserRole(token)){
+            //Si es admin
+            userRepository.updatePassword(changePasswordDTO.email(), user.get().getPassword());
+        }
 
         return userMapper.fromUser(user.get());
     }
 
-    public List<UserResponseDTO> getAllUsers(){
-        //Para hacer esto necestita ser admin
+    public List<UserResponseDTO> getAllUsers(String token){
+        if(!validateUserRole(token)){
+            throw new RuntimeException("User not authorized");
+        }
         List<UserModel> list = userRepository.findAll();
         return list.stream().map(userMapper::fromUser).toList();
     }

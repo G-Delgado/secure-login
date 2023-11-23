@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +31,14 @@ public class TokenService {
     }
 
     private String generateToken(HashMap<String,Object> claims, UserDetails user){
+        String scope = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
+
         return Jwts
                 .builder()
                 .setClaims(claims)
+                .claim("scope",scope)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
