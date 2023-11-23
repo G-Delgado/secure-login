@@ -6,6 +6,7 @@ import com.login.secureloginbackend.dto.request.SignUpDTO;
 import com.login.secureloginbackend.dto.response.TokenDTO;
 import com.login.secureloginbackend.dto.response.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ public interface UserAPI {
 
     @PostMapping("/login")
     TokenDTO login(@Valid @RequestBody LoginDTO loginDTO);
+
 
     @PostMapping("/signup")
     TokenDTO signUp(@Valid @RequestBody SignUpDTO signUpDTO);

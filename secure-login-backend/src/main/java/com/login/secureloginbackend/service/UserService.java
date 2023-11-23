@@ -40,7 +40,8 @@ public class UserService {
 
 
     private boolean validateAdminExists(){
-        return userRepository.findUserModelAdmin().isPresent();
+        Optional<UserModel> user = userRepository.findUserModelByRole(Role.ADMIN);
+        return user.isPresent();
     }
 
     private Optional<UserModel> validateUserExists(String email){

@@ -1,5 +1,6 @@
 package com.login.secureloginbackend;
 
+import com.login.secureloginbackend.model.Role;
 import com.login.secureloginbackend.model.UserModel;
 import com.login.secureloginbackend.repository.UserRepository;
 import com.login.secureloginbackend.util.PasswordEncodeService;
@@ -31,6 +32,7 @@ public class SecureLoginBackendApplication {
 				.firstName("Admin")
 				.lastName("Admin")
 				.email("admin@hotmail.com")
+				.role(Role.ADMIN)
 				.password(encoder.encode("admin"))
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 
@@ -41,6 +43,7 @@ public class SecureLoginBackendApplication {
 				.firstName("John")
 				.lastName("Doe")
 				.email("jd@hotmail.com")
+				.role(Role.USER)
 				.password(encoder.encode("123456"))
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
@@ -50,6 +53,7 @@ public class SecureLoginBackendApplication {
 				.firstName("Karla")
 				.lastName("Doe")
 				.email("kd@hotmail.com")
+				.role(Role.USER)
 				.password(encoder.encode("admin123"))
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();
@@ -59,6 +63,7 @@ public class SecureLoginBackendApplication {
 				.firstName("Carlos")
 				.lastName("Doe")
 				.email("cd@hotmail.com")
+				.role(Role.USER)
 				.password(encoder.encode("admin123456"))
 				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
 				.build();

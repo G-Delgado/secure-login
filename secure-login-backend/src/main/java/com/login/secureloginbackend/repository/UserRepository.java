@@ -1,5 +1,6 @@
 package com.login.secureloginbackend.repository;
 
+import com.login.secureloginbackend.model.Role;
 import com.login.secureloginbackend.model.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,8 +18,7 @@ public interface UserRepository extends JpaRepository<UserModel, UUID> {
 
     Optional<UserModel> findUserModelByEmail(String email);
 
-    @Query(value = "SELECT u FROM UserModel u WHERE u.role = 'ADMIN'")
-    Optional<UserModel> findUserModelAdmin();
+    Optional<UserModel> findUserModelByRole(Role role);
 
     @Modifying
     @Query(value = "UPDATE UserModel u SET u.password = :password WHERE u.email = :email")

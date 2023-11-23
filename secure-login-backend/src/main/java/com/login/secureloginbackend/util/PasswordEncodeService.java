@@ -21,7 +21,7 @@ public class PasswordEncodeService  implements PasswordEncoder {
     public String encode(CharSequence rawPassword) {
         try{
             //TODO probar con la cantidad recomendad de iteraciones:1,300,000
-            int iterations = 1300000;
+            int iterations = 100;
             char[] chars = rawPassword.toString().toCharArray();
             byte[] salt = genSalt();
             //PBKDF2WithHmacSHA1 algoritmo de encriptacion
