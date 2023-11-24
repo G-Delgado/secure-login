@@ -6,8 +6,11 @@ import com.login.secureloginbackend.dto.request.SignUpDTO;
 import com.login.secureloginbackend.dto.response.TokenDTO;
 import com.login.secureloginbackend.dto.response.UserResponseDTO;
 import com.login.secureloginbackend.service.UserService;
+
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,7 +26,7 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public UserResponseDTO signUp(SignUpDTO signUpDTO) {
+    public TokenDTO signUp(SignUpDTO signUpDTO) {
         return userService.save(signUpDTO);
     }
 
@@ -33,23 +36,28 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public ResponseEntity<String> deleteUser(String email) {
+    public ResponseEntity<String> deleteUser(String email, String token) {
         //Necesita ser admin
-        return userService.deleteUser(email);
+        return userService.deleteUser(email,token);
     }
 
     @Override
-    public UserResponseDTO changePassword(ChangePasswordDTO changePasswordDTO) {
+    public UserResponseDTO changePassword(ChangePasswordDTO changePasswordDTO, String token) {
         //Necesita ser admin para cambiar la contraseña de cualquiera
-        return userService.changePassword(changePasswordDTO);
+        return userService.changePassword(changePasswordDTO,token);
 
     }
 
     @Override
-    public List<UserResponseDTO> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers(String token) {
         //Necesita ser admin
-        return userService.getAllUsers();
+        return userService.getAllUsers(token);
 
+    }
+
+    @Override
+    public ResponseEntity<Boolean> isAdmin(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return ResponseEntity.ok(userService.validateUserRole(token));
     }
 
 
