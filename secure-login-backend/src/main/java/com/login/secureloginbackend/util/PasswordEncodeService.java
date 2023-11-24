@@ -11,8 +11,8 @@ import java.security.spec.InvalidKeySpecException;
 public class PasswordEncodeService {
 
     public static String encodePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        //TODO probar con la cantidad recomendad de iteraciones:1,300,000
-        int iterations = 1300000;
+
+        int iterations = 2000;
         char[] chars = password.toCharArray();
         byte[] salt = genSalt();
         //PBKDF2WithHmacSHA1 algoritmo de encriptacion
