@@ -12,7 +12,7 @@ function App() {
   return (
     <>
       <Navbar/>
-      <div className="w-100 d-flex justify-content-center">
+      <div className="w-100 d-flex justify-content-center h-100" /*style={{width: "100vw"}}*/>
       <AppProvider>
         <RoutesComponent/>
       </AppProvider>

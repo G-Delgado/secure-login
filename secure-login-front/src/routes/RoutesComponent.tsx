@@ -15,11 +15,11 @@ const RoutesComponent: React.FC = () => {
                 {/* Public routes */}
                 <Route path="/signup" element={<SignUp/>} />
                 <Route path="/login" element={<Login/>} />
+                <Route path='/changePassword' element={<ChangePassword/>}/>
 
                 {/* Private routes */}
                 <Route path="/" element={<PrivateRoute element={<Dashboard/>} />}/>
                 <Route path='/user/:email' element={<PrivateRoute element={<UserInfo/>} />}/>
-                <Route path='/changePassword' element={<PrivateRoute element={<ChangePassword/>} />}/>
 
                 {/* Protected routes 'Admin' */}
                 <Route path='/users' element={<PrivateRoute element={<UserListView/>} />}/>
