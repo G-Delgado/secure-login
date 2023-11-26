@@ -1,14 +1,20 @@
-import { Route, Navigate, RouteProps } from 'react-router-dom';
+import { Route, Navigate } from 'react-router-dom';
 import { useAppContext } from '../../util/AppContext';
 
-const PrivateRoute: React.FC<RouteProps> = ({ element, ...rest }: RouteProps) => {
+interface PrivateRouteProps {
+    element: React.ReactElement;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element : Element, ...rest }: PrivateRouteProps) => {
 
     const { token } = useAppContext();
 
     const isAuthenticated = !!token /* Función para verificar si el usuario está autenticado */;
 
     return isAuthenticated ? (
-        <Route {...rest} element={element} />
+        <>
+        {Element}
+        </>
     ) : (
         <Navigate to="/login" replace />
     );

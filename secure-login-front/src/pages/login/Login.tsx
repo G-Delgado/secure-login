@@ -4,14 +4,18 @@ import bg from '../../assets/mountains.avif'
 import containerbg from '../../assets/liquid-cheese3.png'
 import react from '../../assets/react.svg';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importa los iconos para mostrar y ocultar
-import { LoginDTO } from '../../util/Models';
+import { LoginDTO, TokenDTO } from '../../util/Models';
 import { useNavigate } from 'react-router-dom';
+import backendUrl from '../../util/Config';
+import axios, { AxiosResponse } from 'axios';
+import { useAppContext } from '../../util/AppContext';
 
 
 const Login: React.FC = () => {
 
   const navigate = useNavigate()
 
+    const { setToken, setEmail } = useAppContext();
     const [showPassword, setShowPassword] = useState(false);
     const [user, setUser] = useState<LoginDTO>({
         email: '',
@@ -22,9 +26,24 @@ const Login: React.FC = () => {
         setShowPassword(!showPassword);
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+      setToken("");
+      setEmail("");
         event.preventDefault();
         console.log(user);
+
+        let url = backendUrl + "/auth/login"
+
+        let response: AxiosResponse<TokenDTO> = await axios.post(url, user);
+
+        console.log(response.data)
+
+        setToken(response.data.token);
+        setEmail(response.data.email);
+
+        if (response.data.token && response.data.email) {
+          navigate("/");
+        }
     }
 
     const handleChangeUser = (event: string, field: keyof LoginDTO) => {
@@ -78,7 +97,7 @@ const Login: React.FC = () => {
             </Row>
             <Row className="justify-content-center">
               <Col xs={12} md={8} className="text-center">
-                <a href="" onClick={() => navigate("/changePassword")}>¿Olvidó su contraseña?</a>
+                <a href="" onClick={() => navigate("/forgotPassword")}>¿Olvidó su contraseña?</a>
               </Col>
             </Row>
             {/* Footer o información adicional */}

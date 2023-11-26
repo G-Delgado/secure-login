@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import containerbg from '../../assets/liquid-cheese.svg'
-import { SignUpDTO } from '../../util/Models';
+import { SignUpDTO, TokenDTO } from '../../util/Models';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import backendUrl from '../../util/Config';
+import axios, { AxiosResponse } from 'axios';
+import { useAppContext } from '../../util/AppContext';
 
 const SignUp: React.FC = () => {
 
     const navigate = useNavigate();
+    const { setEmail, setToken } = useAppContext();
 
 
     const [user, setUser] = useState<SignUpDTO>({
@@ -29,9 +34,44 @@ const SignUp: React.FC = () => {
         setConfirmPassword(event);
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         console.log(user);
+
+        if (user.password != confirmPassword) {
+            Swal.fire({
+                title: 'Hubo un problema',
+                text: 'Las contraseñas no coinciden',
+                icon: 'warning',
+            })
+        } else {
+            let url = backendUrl + '/auth/signup';   
+
+            let response : AxiosResponse<TokenDTO> = await axios.post(url, user);
+            console.log(response.data)
+            if (response.data) {
+                Swal.fire({
+                    title: 'Cuenta creada',
+                    text: 'Se ha creado la cuenta correctamente',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        //
+                    }
+                    setEmail(response.data.email);
+                    setToken(response.data.token);
+                    navigate('/');
+                    
+                })
+            } else {
+                Swal.fire({
+                    title: 'Hubo un problema',
+                    text: 'Hubo un problema al crear la cuenta. Revisa la información enviada',
+                    icon: 'error',
+                })
+            }
+        }
     }
 
     return (
@@ -89,7 +129,7 @@ const SignUp: React.FC = () => {
 
                                 <Form.Group className='mb-4'>
                                     <Form.Label>Confirmar contraseña</Form.Label>
-                                    <Form.Control type='confirmPassword' placeholder='Confirmar contraseña' autoComplete='name' required value={confirmPassword} onChange={(event) => handleConfirmPassword(event.target.value)} />
+                                    <Form.Control type='password' placeholder='Confirmar contraseña' autoComplete='name' required value={confirmPassword} onChange={(event) => handleConfirmPassword(event.target.value)} />
                                 </Form.Group>
 
 

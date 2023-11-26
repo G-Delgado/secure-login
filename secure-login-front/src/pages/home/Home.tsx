@@ -3,10 +3,14 @@ import { useAppContext } from "../../util/AppContext";
 import backendUrl from "../../util/Config";
 import { UserResponseDTO } from "../../util/Models";
 import axios, { AxiosResponse } from "axios";
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
-const UserInfo: React.FC = () => {
+const Home: React.FC = () => {
 
     const { email, token } = useAppContext();
+
+    const navigate = useNavigate();
 
     const [user, setUser] = useState<UserResponseDTO>({
         userId: '',
@@ -92,6 +96,7 @@ const UserInfo: React.FC = () => {
                         <h1>Hola, {user.firstName + " " + user.lastName}</h1>
                         <h2>Correo: {user.email}</h2>
                         <h2>Último login: {user.lastLogin.toString()}</h2>
+                        <Button variant="primary" onClick={() => { navigate(`/user/${email}`)}}>Ver perfil</Button>
                     </div>
                     </>
             }
@@ -99,4 +104,4 @@ const UserInfo: React.FC = () => {
     )
 }
 
-export default UserInfo;
+export default Home;

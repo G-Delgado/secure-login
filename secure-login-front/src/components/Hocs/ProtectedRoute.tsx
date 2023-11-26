@@ -23,7 +23,6 @@ const ProtectedRoute: React.FC<RouteProps> = ({ element, ...rest }: RouteProps) 
 
         setIsAdmin(response.data);
         setLoading(false);
-    
     }
     
 
