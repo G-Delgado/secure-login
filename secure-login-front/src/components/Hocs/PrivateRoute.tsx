@@ -1,4 +1,4 @@
-import { Route, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAppContext } from '../../util/AppContext';
 
 interface PrivateRouteProps {

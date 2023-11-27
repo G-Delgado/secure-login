@@ -41,7 +41,15 @@ const Login: React.FC = () => {
         setToken(response.data.token);
         setEmail(response.data.email);
 
-        if (response.data.token && response.data.email) {
+        let Roleurl = backendUrl + "/auth/role"
+        console.log(response.data.token)
+        let responseRole : AxiosResponse<boolean> = await axios.get(Roleurl, {headers: {
+          Authorization: "Bearer " + response.data.token
+        }})
+
+        if (responseRole.data == true) {
+          navigate("/dashboard");
+        } else if (response.data.token && response.data.email) {
           navigate("/");
         }
     }

@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from '../pages/login/Login';
-import UserListView from '../pages/UsersList/UserListView';
 import UserInfo from '../pages/userInfo/UserInfo';
 import ChangePassword from '../pages/changePassword/ChangePassword';
 import AdmChangePassword from '../pages/changePassword/AdmChangePassword/AdmChangePassword';
@@ -9,6 +8,7 @@ import Dashboard from '../pages/dashboard/Dashboard';
 import PrivateRoute from '../components/Hocs/PrivateRoute';
 import Home from '../pages/home/Home';
 import ForgotPassword from '../pages/forgotPassword/ForgotPassword';
+import ProtectedRoute from '../components/Hocs/ProtectedRoute';
 
 const RoutesComponent: React.FC = () => {
     return (
@@ -25,9 +25,8 @@ const RoutesComponent: React.FC = () => {
                 <Route path='/changePassword' element={<PrivateRoute element={<ChangePassword/>}/>}/>
 
                 {/* Protected routes 'Admin' */}
-                <Route path="/dashboard" element={<PrivateRoute element={<Dashboard/>} />}/>
-                <Route path='/users' element={<PrivateRoute element={<UserListView/>} />}/>
-                <Route path='/changePassword/:email' element={<PrivateRoute element={<AdmChangePassword/>} />}/>
+                <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard/>} />}/>
+                <Route path='/changePassword/:email' element={<ProtectedRoute element={<AdmChangePassword/>} />}/>
 
                 {/* Add more routes as needed */}
             </Routes>

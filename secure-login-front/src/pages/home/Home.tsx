@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
 
-    const { email, token } = useAppContext();
+    const { email, token, setEmail, setToken } = useAppContext();
 
     const navigate = useNavigate();
 
@@ -85,6 +85,12 @@ const Home: React.FC = () => {
     }, [email])
 
 
+    const handleLogOut = () => {
+        setEmail('');
+        setToken('');
+        navigate('/login');
+    }
+
 
 
     return (
@@ -93,6 +99,7 @@ const Home: React.FC = () => {
                 user.firstName == '' ? <h1>Cargando...</h1> :
                     <>
                     <div className="d-flex flex-column justify-content-center align-items-center">
+                        <Button variant="primary" onClick={handleLogOut}>Cerrar sesión</Button>
                         <h1>Hola, {user.firstName + " " + user.lastName}</h1>
                         <h2>Correo: {user.email}</h2>
                         <h2>Último login: {user.lastLogin.toString()}</h2>

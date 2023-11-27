@@ -1,40 +1,51 @@
 import { Route, Navigate } from 'react-router-dom';
-import { RouteProps } from 'react-router-dom';
 import { useAppContext } from '../../util/AppContext';
 import { useEffect, useState } from 'react';
 import backendUrl from '../../util/Config';
 import axios, { AxiosResponse } from 'axios';
 
-const ProtectedRoute: React.FC<RouteProps> = ({ element, ...rest }: RouteProps) => {
+interface ProtectedRouteProps {
+    element: React.ReactElement;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element : Element, ...rest }: ProtectedRouteProps) => {
     const {token} = useAppContext();/* Obtener el token almacenado en el almacenamiento local */;
     const [isAdmin, setIsAdmin] = useState(false); /* Variable para verificar si el usuario es administrador */;
     const [loading, setLoading] = useState(true);
 
-    const getRole = async () => {
-        let url = backendUrl + '/auth/role';
+    useEffect(() => {
+        const getRole = async () => {
+            if (token) {
+                let url = backendUrl + '/auth/role';
 
-        const headers = {
-            'Authorization': 'Bearer ' + token,
-        }
+                const headers = {
+                    'Authorization': 'Bearer ' + token,
+                }
 
-        let response: AxiosResponse<boolean> = await axios.get(url, {headers: headers});
+                try {
+                    let response: AxiosResponse<boolean> = await axios.get(url, { headers });
+                    setIsAdmin(response.data);
+                } catch (error) {
+                    // Manejar errores de solicitud
+                    console.error(error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
 
-        console.log(response.data)
+        getRole();
+    }, [token]);
 
-        setIsAdmin(response.data);
-        setLoading(false);
+    if (loading) {
+        return null;
     }
     
 
-    useEffect(() => {
-        if(token){
-            getRole();
-        }
-    }, [token])
-    
-
-    return isAdmin && !loading ? (
-        <Route {...rest} element={element} />
+    return isAdmin ? (
+        <>
+        {Element}
+        </>
     ) : (
         <Navigate to="/login" replace />
     );
