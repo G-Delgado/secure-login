@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import backendUrl from '../../util/Config';
 import axios, { AxiosResponse } from 'axios';
 import { useAppContext } from '../../util/AppContext';
+import { createCookie } from '../../util/Methods';
 
 const SignUp: React.FC = () => {
 
@@ -61,6 +62,8 @@ const SignUp: React.FC = () => {
                     }
                     setEmail(response.data.email);
                     setToken(response.data.token);
+                    createCookie('token', response.data.token, 1);
+                    createCookie('email', response.data.email, 1);
                     navigate('/');
                     
                 })

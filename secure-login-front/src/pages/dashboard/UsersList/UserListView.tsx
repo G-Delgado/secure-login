@@ -5,11 +5,13 @@ import Swal from 'sweetalert2';
 import backendUrl from "../../../util/Config";
 import axios, { AxiosResponse } from "axios";
 import { useAppContext } from "../../../util/AppContext";
+import { getCookie } from "../../../util/Methods";
 
 
 const UserListView: React.FC = () => {
 
-    const {token,email} = useAppContext();
+    const token = getCookie('token') || useAppContext().token;
+    const email = getCookie('email') || useAppContext().email;
     const [usuarios, setUsuarios] = useState<UserResponseDTO[]>([]);
 
     const [selectedUser, setSelectedUser] = useState<UserResponseDTO>({
@@ -121,6 +123,7 @@ const UserListView: React.FC = () => {
                         'El usuario ha sido borrado.',
                         'success'
                     )
+                    loadUsers();
                 }
 
             } else if (

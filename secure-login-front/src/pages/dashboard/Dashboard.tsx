@@ -5,13 +5,14 @@ import { useEffect, useState } from 'react';
 import backendUrl from '../../util/Config';
 import { useAppContext } from '../../util/AppContext';
 import axios, { AxiosResponse } from 'axios';
-
 import containerbg from '../../assets/liquid-cheese2.png';
+import { getCookie } from '../../util/Methods';
+import NavbarBootstrap from '../../components/layout/NavbarBootstrap';
 
 
 const Dashboard: React.FC = () => {
 
-    const {token} = useAppContext();
+    const token = getCookie('token') || useAppContext().token;
     const [numberOfUsers, setNumberOfUsers] = useState<number>(0);
 
     const getNumberOfUsers = async () => {
@@ -35,7 +36,8 @@ const Dashboard: React.FC = () => {
 
     return (
         <>
-            <Container fluid className=' w-80 h-100 d-flex flex-column justify-content-center align-items-center bg-image position-relative overflow-auto' style={{backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+            <Container fluid className=' w-80 h-100 d-flex flex-column justify-content-center align-items-center bg-image overflow-auto mt-4' style={{backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+                <NavbarBootstrap/>
                 <div className='w-100  my-3 rounded-3 '>
                     <h3>Dashboard</h3>
                 </div>

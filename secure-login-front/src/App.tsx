@@ -11,8 +11,8 @@ function App() {
   
   return (
     <>
-      <NavbarBootstrap/>
-      <div className="w-100 d-flex justify-content-center h-100" /*style={{width: "100vw"}}*/>
+      
+      <div className="w-100 d-flex justify-content-center h-100 " /*style={{minHeight: "100vh", height: '2500px'}}*/>
       <AppProvider>
         <RoutesComponent/>
       </AppProvider>

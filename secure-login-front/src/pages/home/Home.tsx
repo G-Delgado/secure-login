@@ -3,12 +3,19 @@ import { useAppContext } from "../../util/AppContext";
 import backendUrl from "../../util/Config";
 import { UserResponseDTO } from "../../util/Models";
 import axios, { AxiosResponse } from "axios";
-import { Button } from "react-bootstrap";
+import { Button, Card, ListGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../../util/Methods";
+import NavbarBootstrap from "../../components/layout/NavbarBootstrap";
+import containerbg from '../../assets/liquid-cheese.png';
+import usrImg from '../../assets/user.png';
+
 
 const Home: React.FC = () => {
 
-    const { email, token, setEmail, setToken } = useAppContext();
+    const { setEmail, setToken } = useAppContext();
+    const token = getCookie('token') || useAppContext().token;
+    const email = getCookie('email') || useAppContext().email;
 
     const navigate = useNavigate();
 
@@ -51,7 +58,7 @@ const Home: React.FC = () => {
             },
             function (error) {
                 return Promise.reject(error);
-            }   
+            }
         );
 
 
@@ -63,7 +70,6 @@ const Home: React.FC = () => {
                 }
             });
         } catch (error) {
-            console.log("PUTA MADRE!")
             console.log(error)
         }
 
@@ -98,13 +104,21 @@ const Home: React.FC = () => {
             {
                 user.firstName == '' ? <h1>Cargando...</h1> :
                     <>
-                    <div className="d-flex flex-column justify-content-center align-items-center">
-                        <Button variant="primary" onClick={handleLogOut}>Cerrar sesión</Button>
-                        <h1>Hola, {user.firstName + " " + user.lastName}</h1>
-                        <h2>Correo: {user.email}</h2>
-                        <h2>Último login: {user.lastLogin.toString()}</h2>
-                        <Button variant="primary" onClick={() => { navigate(`/user/${email}`)}}>Ver perfil</Button>
-                    </div>
+                        <div className="align-self-center d-flex flex-column justify-content-center align-items-center w-100 h-100 bg-image" style={{ backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
+                            <NavbarBootstrap/>
+                            <Card className="bg-dark text-white shadow mt-4" style={{ width: '18rem' }}>
+                                <Card.Img variant="top" src={usrImg} alt="User Icon" className="rounded-circle align-self-center" style={{ height: '5em', width: '5em' }} />
+                                <Card.Body>
+                                    <Card.Title>{user.firstName.toUpperCase()} {user.lastName.toUpperCase()}</Card.Title>
+                                    <Card.Text>
+                                        Actualmente estamos trabajando en el Home! Próximamente estará listo
+                                    </Card.Text>
+                                </Card.Body>
+                                <Card.Body>
+                                    <Button variant="primary" onClick={() => { navigate(`/user`) }}>Ver perfil</Button>
+                                </Card.Body>
+                            </Card>
+                        </div>
                     </>
             }
         </>

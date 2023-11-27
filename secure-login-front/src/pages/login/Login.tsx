@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import backendUrl from '../../util/Config';
 import axios, { AxiosResponse } from 'axios';
 import { useAppContext } from '../../util/AppContext';
+import { createCookie } from '../../util/Methods';
 
 
 const Login: React.FC = () => {
@@ -40,6 +41,9 @@ const Login: React.FC = () => {
 
         setToken(response.data.token);
         setEmail(response.data.email);
+
+        createCookie("token", response.data.token, 1);
+        createCookie("email", response.data.email, 1);
 
         let Roleurl = backendUrl + "/auth/role"
         console.log(response.data.token)

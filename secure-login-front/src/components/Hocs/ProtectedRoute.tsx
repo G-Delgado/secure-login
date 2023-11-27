@@ -3,13 +3,14 @@ import { useAppContext } from '../../util/AppContext';
 import { useEffect, useState } from 'react';
 import backendUrl from '../../util/Config';
 import axios, { AxiosResponse } from 'axios';
+import { getCookie } from '../../util/Methods';
 
 interface ProtectedRouteProps {
     element: React.ReactElement;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element : Element, ...rest }: ProtectedRouteProps) => {
-    const {token} = useAppContext();/* Obtener el token almacenado en el almacenamiento local */;
+    const token = getCookie('token') || useAppContext().token;/* Obtener el token almacenado en el almacenamiento local */;
     const [isAdmin, setIsAdmin] = useState(false); /* Variable para verificar si el usuario es administrador */;
     const [loading, setLoading] = useState(true);
 

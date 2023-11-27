@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAppContext } from '../../util/AppContext';
+import { getCookie } from '../../util/Methods';
 
 interface PrivateRouteProps {
     element: React.ReactElement;
@@ -7,7 +8,7 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element : Element, ...rest }: PrivateRouteProps) => {
 
-    const { token } = useAppContext();
+    const token = getCookie("token") || useAppContext().token;
 
     const isAuthenticated = !!token /* Función para verificar si el usuario está autenticado */;
 
