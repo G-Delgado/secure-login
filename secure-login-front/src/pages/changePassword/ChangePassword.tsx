@@ -3,7 +3,7 @@ import containerbg from '../../assets/liquid-cheese3.png';
 import { getCookie } from "../../util/Methods";
 import { useAppContext } from "../../util/AppContext";
 import { useNavigate } from "react-router-dom";
-import { ChangePasswordDTO, UserResponseDTO } from "../../util/Models";
+import { ChangePasswordDTO, UserResponseDTO, restrictedCharsRegex } from "../../util/Models";
 import { useEffect, useState } from "react";
 import backendUrl from "../../util/Config";
 import axios, { AxiosResponse } from "axios";
@@ -11,6 +11,10 @@ import usrImg from '../../assets/user.png'
 import Swal from "sweetalert2";
 import NavbarBootstrap from "../../components/layout/NavbarBootstrap";
 
+interface FormErrors {
+    email: boolean,
+    newPassword: boolean
+  }
 
 const ChangePassword: React.FC = () => {
 
@@ -24,6 +28,11 @@ const ChangePassword: React.FC = () => {
         newPassword: '',
         oldPassword: 'NOT EMPTY'
     });
+
+    const [errors, setErrors] = useState<FormErrors>({
+        email: false,
+        newPassword: false
+      });
 
     const [user, setUser] = useState<UserResponseDTO>({
         userId: '',
@@ -71,31 +80,40 @@ const ChangePassword: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        let url = backendUrl + `/auth/user/changePassword`;
-
-        let response: AxiosResponse<UserResponseDTO> = await axios.patch(url, changePassword, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        })
-
-        if (response.status === 200) {
-            Swal.fire({
-                title: 'Contraseña cambiada con éxito',
-                text: 'Por favor, inicia sesión nuevamente',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate('/user');
+        if (!errors.email && !errors.newPassword) {
+            let url = backendUrl + `/auth/user/changePassword`;
+    
+            let response: AxiosResponse<UserResponseDTO> = await axios.patch(url, changePassword, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-            
             })
+    
+            if (response.status === 200) {
+                Swal.fire({
+                    title: 'Contraseña cambiada con éxito',
+                    text: 'Por favor, inicia sesión nuevamente',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate('/user');
+                    }
+                
+                })
+            }
+        } else {
+            alert(" Error al cambiar la contraseña. Caracteres equivocados en el formulario!")
         }
 
     }
 
     const handleChangeType = (event: string, type: keyof ChangePasswordDTO) => {
+        if (restrictedCharsRegex.test(event)) {
+            setErrors({...errors, [type]: true});
+        } else {
+            setErrors({...errors, [type]: false});
+        }
         setChangePassword({ ...changePassword, [type]: event });
         changeOldPassword()
     }
@@ -118,11 +136,17 @@ const ChangePassword: React.FC = () => {
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Correo</Form.Label>
-                        <Form.Control type="email" placeholder="Correo" value={changePassword.email} onChange={(e) => handleChangeType(e.target.value, 'email')}/>
+                        <Form.Control type="email" placeholder="Correo" isInvalid={errors.email} value={changePassword.email} onChange={(e) => handleChangeType(e.target.value, 'email')}/>
+                        <Form.Control.Feedback type="invalid">
+                        Input contains restricted characters
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formNewPassword">
                         <Form.Label>Contraseña nueva</Form.Label>
-                        <Form.Control type="password" placeholder="Contraseña nueva" value={changePassword.newPassword} onChange={(e) => handleChangeType(e.target.value, 'newPassword')}/>
+                        <Form.Control type="password" placeholder="Contraseña nueva" isInvalid={errors.newPassword} value={changePassword.newPassword} onChange={(e) => handleChangeType(e.target.value, 'newPassword')}/>
+                        <Form.Control.Feedback type="invalid">
+                        Input contains restricted characters
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Button variant="primary" type="submit">
                         Cambiar contraseña

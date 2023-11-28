@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import containerbg from '../../assets/liquid-cheese.svg'
-import { SignUpDTO, TokenDTO } from '../../util/Models';
+import { SignUpDTO, TokenDTO, restrictedCharsRegex } from '../../util/Models';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import backendUrl from '../../util/Config';
@@ -11,8 +11,22 @@ import { createCookie } from '../../util/Methods';
 
 const SignUp: React.FC = () => {
 
+    interface FormErrors {
+        firstName: boolean,
+        lastName: boolean,
+        email: boolean,
+        password: boolean
+    }
+
     const navigate = useNavigate();
     const { setEmail, setToken } = useAppContext();
+
+    const [errors, setErrors] = useState<FormErrors>({
+        firstName: false,
+        lastName: false,
+        email: false,
+        password: false
+    })
 
 
     const [user, setUser] = useState<SignUpDTO>({
@@ -25,6 +39,11 @@ const SignUp: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
 
     const handleChangeUser = (event: string, field: keyof SignUpDTO) => {
+        if (restrictedCharsRegex.test(event)) {
+            setErrors({ ...errors, [field]: true });
+        } else {
+            setErrors({ ...errors, [field]: false });
+        }
         setUser({
             ...user,
             [field]: event
@@ -37,7 +56,7 @@ const SignUp: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(user);
+        //console.log(user);
 
         if (user.password != confirmPassword) {
             Swal.fire({
@@ -45,11 +64,11 @@ const SignUp: React.FC = () => {
                 text: 'Las contraseñas no coinciden',
                 icon: 'warning',
             })
-        } else {
-            let url = backendUrl + '/auth/signup';   
+        } else if (!errors.firstName && !errors.lastName && !errors.email && !errors.password){
+            let url = backendUrl + '/auth/signup';
             let response: AxiosResponse<TokenDTO> = {} as AxiosResponse<TokenDTO>;
             try {
-                response= await axios.post(url, user);
+                response = await axios.post(url, user);
             } catch (error) {
                 alert("Hubo un error al crear la cuenta, por favor intente de nuevo o cambie las credenciales")
             }
@@ -69,7 +88,7 @@ const SignUp: React.FC = () => {
                     createCookie('token', response.data.token, 1);
                     createCookie('email', response.data.email, 1);
                     navigate('/');
-                    
+
                 })
             } else {
                 Swal.fire({
@@ -78,11 +97,13 @@ const SignUp: React.FC = () => {
                     icon: 'error',
                 })
             }
+        } else {
+            alert("Caracteres prohibidos en alguno de los campos")
         }
     }
 
     return (
-        <Container fluid className='p-4 bg-light bg-image' style={{ backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+        <Container fluid className='p-4 bg-light bg-image' style={{ backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
             <Row>
 
                 <Col md={6} className='text-center text-md-start d-flex flex-column justify-content-center'>
@@ -104,34 +125,46 @@ const SignUp: React.FC = () => {
 
 
                     <Card className='my-5 shadow-lg border-white bg-light'>
-                        <h2 style={{color: '#0464ac'}}>Crea tu cuenta</h2>
+                        <h2 style={{ color: '#0464ac' }}>Crea tu cuenta</h2>
                         <Card.Body className='p-3'>
 
                             <Form onSubmit={handleSubmit}>
                                 <Row>
                                     <Col xs={6}>
-                                        <Form.Group className='mb-4'>
+                                        <Form.Group className='mb-2'>
                                             <Form.Label>Nombre</Form.Label>
-                                            <Form.Control className='' type='text' placeholder='Nombre' autoComplete='name' required value={user.firstName} onChange={(ev) => handleChangeUser(ev.target.value, 'firstName')} />
+                                            <Form.Control className='' type='text' placeholder='Nombre' isInvalid={errors.firstName} autoComplete='name' required value={user.firstName} onChange={(ev) => handleChangeUser(ev.target.value, 'firstName')} />
+                                            <Form.Control.Feedback type="invalid">
+                                                Input contains restricted characters
+                                            </Form.Control.Feedback>
                                         </Form.Group>
                                     </Col>
 
                                     <Col xs={6}>
                                         <Form.Group className='mb-2'>
                                             <Form.Label>Apellido</Form.Label>
-                                            <Form.Control type='text' placeholder='Apellido' autoComplete='name' required value={user.lastName} onChange={(ev) => handleChangeUser(ev.target.value, 'lastName')} />
+                                            <Form.Control type='text' placeholder='Apellido' autoComplete='name' isInvalid={errors.lastName} required value={user.lastName} onChange={(ev) => handleChangeUser(ev.target.value, 'lastName')} />
+                                            <Form.Control.Feedback type="invalid">
+                                                Input contains restricted characters
+                                            </Form.Control.Feedback>
                                         </Form.Group>
                                     </Col>
                                 </Row>
 
                                 <Form.Group className='mb-2'>
                                     <Form.Label>Correo</Form.Label>
-                                    <Form.Control type='email' placeholder='Correo' autoComplete='name' required value={user.email} onChange={(ev) => handleChangeUser(ev.target.value, 'email')} />
+                                    <Form.Control type='email' placeholder='Correo' autoComplete='name' isInvalid={errors.email} required value={user.email} onChange={(ev) => handleChangeUser(ev.target.value, 'email')} />
+                                    <Form.Control.Feedback type="invalid">
+                                        Input contains restricted characters
+                                    </Form.Control.Feedback>
                                 </Form.Group>
 
                                 <Form.Group className='mb-2'>
                                     <Form.Label>Contraseña</Form.Label>
-                                    <Form.Control type='password' placeholder='Contraseña' autoComplete='name' required value={user.password} onChange={(ev) => handleChangeUser(ev.target.value, 'password')} />
+                                    <Form.Control type='password' placeholder='Contraseña' isInvalid={errors.password} autoComplete='name' required value={user.password} onChange={(ev) => handleChangeUser(ev.target.value, 'password')} />
+                                    <Form.Control.Feedback type="invalid">
+                                        Input contains restricted characters
+                                    </Form.Control.Feedback>
                                 </Form.Group>
 
                                 <Form.Group className='mb-4'>

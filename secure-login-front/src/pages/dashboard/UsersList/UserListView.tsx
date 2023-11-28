@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChangePasswordDTO, UserResponseDTO } from "../../../util/Models";
+import { ChangePasswordDTO, UserResponseDTO, restrictedCharsRegex } from "../../../util/Models";
 import { Table, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import backendUrl from "../../../util/Config";
@@ -29,12 +29,12 @@ const UserListView: React.FC = () => {
 
         let response: AxiosResponse<UserResponseDTO[]> = {} as AxiosResponse<UserResponseDTO[]>;
         try {
-             response = await axios.get(url, {
+            response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             })
-        } catch(error) {
+        } catch (error) {
             alert("Hubo un error al obtener la lista de usuarios")
         }
 
@@ -45,11 +45,11 @@ const UserListView: React.FC = () => {
     }
 
     useEffect(() => {
-        if (token != '' ) {
+        if (token != '') {
             loadUsers();
         }
     }, [token])
-    
+
 
     const handleRowClick = (user: UserResponseDTO) => {
         setSelectedUser(user);
@@ -59,47 +59,54 @@ const UserListView: React.FC = () => {
             title: 'Ingrese los datos para cambiar la contraseña',
             text: 'Por favor, ingrese la contraseña nueva:',
             html:
-            `<input id="swal-input1" class="swal2-input" placeholder="Correo" value=${user.email} readonly>` +
-              '<input id="swal-input2" class="swal2-input" placeholder="Contraseña nueva">',
+                `<input id="swal-input1" class="swal2-input" placeholder="Correo" value=${user.email} readonly>` +
+                '<input id="swal-input2" class="swal2-input" placeholder="Contraseña nueva">',
             confirmButtonText: 'Cambiar contraseña',
             focusConfirm: false,
             preConfirm: () => {
-              const email = (document.getElementById('swal-input1') as HTMLInputElement).value;
-              const newPassword = (document.getElementById('swal-input2') as HTMLInputElement).value;
-              return { email, newPassword };
+                const email = (document.getElementById('swal-input1') as HTMLInputElement).value;
+                const newPassword = (document.getElementById('swal-input2') as HTMLInputElement).value;
+                return { email, newPassword };
             }
-          }).then(async result => {
+        }).then(async result => {
             if (result.isConfirmed) {
-              const { email, newPassword } = result.value;
-              //console.log('Correo: ', email);
-              //console.log('Contraseña nueva:', newPassword);
 
-              let url = backendUrl + `/auth/user/changePassword`;
+                if (restrictedCharsRegex.test(result.value.email) || restrictedCharsRegex.test(result.value.newPassword)) {
+                    alert("Caracteres prohibidos en alguno de los campos")
+                    return;
+                } else {
+                    const { email, newPassword } = result.value;
+                    //console.log('Correo: ', email);
+                    //console.log('Contraseña nueva:', newPassword);
 
-              let changePasswordDto: ChangePasswordDTO = {
-                    email: email,
-                    oldPassword: user.password,    
-                    newPassword: newPassword
-              }
+                    let url = backendUrl + `/auth/user/changePassword`;
 
-              let response: AxiosResponse<UserResponseDTO> = await axios.patch(url, changePasswordDto, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+                    let changePasswordDto: ChangePasswordDTO = {
+                        email: email,
+                        oldPassword: user.password,
+                        newPassword: newPassword
+                    }
+
+                    let response: AxiosResponse<UserResponseDTO> = await axios.patch(url, changePasswordDto, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+
+                    })
+
+                    if (response.status == 200) {
+                        Swal.fire(
+                            'Contraseña cambiada!',
+                            'La contraseña ha sido cambiada.',
+                            'success'
+                        )
+                    } else {
+                        alert("Error al cambiar la contraseña")
+                    }
                 }
 
-              })
-
-              if (response.status == 200) {
-                Swal.fire(
-                    'Contraseña cambiada!',
-                    'La contraseña ha sido cambiada.',
-                    'success'
-                )
-              } else {
-                alert("Error al cambiar la contraseña")
-              }
             }
-          });
+        });
     };
 
     const handleDeleteUser = async (user: UserResponseDTO) => {
@@ -116,7 +123,7 @@ const UserListView: React.FC = () => {
 
                 let url = backendUrl + `/auth/user/${user.email}`
 
-                let response: AxiosResponse<string>= await axios.delete(url, {
+                let response: AxiosResponse<string> = await axios.delete(url, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -143,7 +150,7 @@ const UserListView: React.FC = () => {
         })
     }
 
-   
+
 
     return (
         <>

@@ -75,7 +75,7 @@ const UserInfo: React.FC = () => {
             {
                 user.firstName == '' ? <h1>Cargando...</h1> :
                     <>
-                    <div className="align-self-center d-flex flex-column justify-content-center align-items-center w-100 h-100 bg-image" style={{backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+                    <div className="align-self-center d-flex flex-column justify-content-center align-items-center w-100 h-100 bg-image overflow-auto" style={{backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
                         <NavbarBootstrap/>
                         <UserInfoCard user={user} token={token} onPasswordChange={handleChangePassword} onHandleContent={handleNoMoreContent}/>
                     </div>

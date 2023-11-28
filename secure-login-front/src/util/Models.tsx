@@ -40,3 +40,5 @@ export interface UserResponseDTO {
     password: string;
     lastLogin: Date; // Date
 }
+
+export const restrictedCharsRegex: RegExp = /[<>\[\]{}=\\%$/'"*;]/;

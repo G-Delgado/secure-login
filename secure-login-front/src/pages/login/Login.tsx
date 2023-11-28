@@ -4,19 +4,27 @@ import bg from '../../assets/mountains.avif'
 import containerbg from '../../assets/liquid-cheese3.png'
 import react from '../../assets/react.svg';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importa los iconos para mostrar y ocultar
-import { LoginDTO, TokenDTO } from '../../util/Models';
+import { LoginDTO, TokenDTO, restrictedCharsRegex } from '../../util/Models';
 import { useNavigate } from 'react-router-dom';
 import backendUrl from '../../util/Config';
 import axios, { AxiosResponse } from 'axios';
 import { useAppContext } from '../../util/AppContext';
 import { createCookie } from '../../util/Methods';
 
+interface FormErrors {
+  email: boolean,
+  password: boolean
+}
 
 const Login: React.FC = () => {
 
   const navigate = useNavigate()
 
     const { setToken, setEmail } = useAppContext();
+    const [errors, setErrors] = useState<FormErrors>({
+      email: false,
+      password: false
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [user, setUser] = useState<LoginDTO>({
         email: '',
@@ -28,47 +36,59 @@ const Login: React.FC = () => {
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      setToken("");
-      setEmail("");
-        event.preventDefault();
-        //console.log(user);
-
-        let url = backendUrl + "/auth/login"
-        let response: AxiosResponse<TokenDTO> = {} as AxiosResponse<TokenDTO>;
-        try {
-          response = await axios.post(url, user);
-        } catch (error) {
-          alert("Hubo un error al iniciar sesión, por favor intente de nuevo o cambie las credenciales")
-        }
-
-        //console.log(response.data)
-
-        setToken(response.data.token);
-        setEmail(response.data.email);
-
-        createCookie("token", response.data.token, 1);
-        createCookie("email", response.data.email, 1);
-
-        let Roleurl = backendUrl + "/auth/role"
-        //console.log(response.data.token)
-        let responseRole : AxiosResponse<boolean> = {} as AxiosResponse<boolean>;
-        try {
-          responseRole= await axios.get(Roleurl, {headers: {
-            Authorization: "Bearer " + response.data.token
-          }})
-        } catch (error) {
-          alert("Hubo un error al verificar tu rol")
-        }
-        
-
-        if (responseRole.data == true) {
-          navigate("/dashboard");
-        } else if (response.data.token && response.data.email) {
-          navigate("/");
-        }
+      if (!errors.email && !errors.password) {
+        setToken("");
+        setEmail("");
+          event.preventDefault();
+          //console.log(user);
+  
+          let url = backendUrl + "/auth/login"
+          let response: AxiosResponse<TokenDTO> = {} as AxiosResponse<TokenDTO>;
+          try {
+            response = await axios.post(url, user);
+          } catch (error) {
+            alert("Hubo un error al iniciar sesión, por favor intente de nuevo o cambie las credenciales")
+            return;
+          }
+  
+          //console.log(response.data)
+  
+          setToken(response.data.token);
+          setEmail(response.data.email);
+  
+          createCookie("token", response.data.token, 1);
+          createCookie("email", response.data.email, 1);
+  
+          let Roleurl = backendUrl + "/auth/role"
+          //console.log(response.data.token)
+          let responseRole : AxiosResponse<boolean> = {} as AxiosResponse<boolean>;
+          try {
+            responseRole= await axios.get(Roleurl, {headers: {
+              Authorization: "Bearer " + response.data.token
+            }})
+          } catch (error) {
+            alert("Hubo un error al verificar tu rol")
+            return;
+          }
+          
+  
+          if (responseRole.data == true) {
+            navigate("/dashboard");
+          } else if (response.data.token && response.data.email) {
+            navigate("/");
+          }
+      } else {
+        alert("Caracteres prohibidos en alguno de los campos")
+        return;
+      }
     }
 
     const handleChangeUser = (event: string, field: keyof LoginDTO) => {
+        if (restrictedCharsRegex.test(event)) {
+          setErrors({...errors, [field]: true});
+        } else {
+          setErrors({...errors, [field]: false});
+        }
         setUser({
             ...user,
             [field]: event
@@ -95,15 +115,21 @@ const Login: React.FC = () => {
               <Col xs={12} md={8}>
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3" controlId="email">
-                    <Form.Control type="text" placeholder="Correo" autoComplete="email" required value={user.email} onChange={(event) => handleChangeUser(event.target.value, "email")} />
+                    <Form.Control type="text" placeholder="Correo" isInvalid={errors.email} autoComplete="email" required value={user.email} onChange={(event) => handleChangeUser(event.target.value, "email")} />
+                    <Form.Control.Feedback type="invalid">
+                      Input contains restricted characters
+                    </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="password">
                     <InputGroup>
 
-                    <Form.Control type={showPassword ? "text" : "password"} placeholder="Contraseña" autoComplete="current-password" required value={user.password} onChange={(event) => handleChangeUser(event.target.value, "password")}/>
+                    <Form.Control type={showPassword ? "text" : "password"} isInvalid={errors.password} placeholder="Contraseña" autoComplete="current-password" required value={user.password} onChange={(event) => handleChangeUser(event.target.value, "password")}/>
                     <Button variant="outline-secondary" onClick={handleShowPassword} style={{borderColor: '#ced4da'}}>
                       {showPassword ? <FaEyeSlash/> : <FaEye/>}
                     </Button>
+                    <Form.Control.Feedback type="invalid">
+                      Input contains restricted characters
+                    </Form.Control.Feedback>
                     </InputGroup>
                   </Form.Group> 
                   <Button type="submit" variant="primary" className="mb-3 w-100">
