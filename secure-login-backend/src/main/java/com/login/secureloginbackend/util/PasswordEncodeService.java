@@ -11,15 +11,14 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
 
-
 @Service
 public class PasswordEncodeService  implements PasswordEncoder {
 
     @Override
     public String encode(CharSequence rawPassword) {
         try{
-            //TODO probar con la cantidad recomendada de iteraciones:1,300,000
-            int iterations = 100;
+
+            int iterations = 2000;
             char[] chars = rawPassword.toString().toCharArray();
             byte[] salt = genSalt();
             //PBKDF2WithHmacSHA1 algoritmo de encriptacion

@@ -32,10 +32,10 @@ import io.jsonwebtoken.Claims;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private static final PasswordEncodeService encoder = new PasswordEncodeService();
     @Autowired
     private final UserMapper userMapper;
     private final TokenService tokenService;
-    private final PasswordEncodeService encoder;
     private final AuthenticationManager authenticationManager;
 
 
