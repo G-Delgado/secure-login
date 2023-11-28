@@ -43,12 +43,12 @@ const Dashboard: React.FC = () => {
 
     return (
         <>
-            <Container fluid className=' w-80 h-100 d-flex flex-column justify-content-center align-items-center bg-image overflow-auto mt-4' style={{backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+            <Container fluid className=' w-100 h-100 bg-image overflow-auto mt-4' style={{backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
                 <NavbarBootstrap/>
                 <div className='w-100  my-3 rounded-3 '>
                     <h3>Dashboard</h3>
                 </div>
-                <div className=' w-100'>
+                <div className=' w-100s'>
                     <div className='align-self-center my-3 rounded-3'>
                         <h3>Hola, Admin. Bienvenido al Dashboard</h3>
                     </div>

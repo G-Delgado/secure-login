@@ -13,7 +13,8 @@ import NavbarBootstrap from "../../components/layout/NavbarBootstrap";
 
 interface FormErrors {
     email: boolean,
-    newPassword: boolean
+    newPassword: boolean,
+    oldPassword: boolean
   }
 
 const ChangePassword: React.FC = () => {
@@ -26,12 +27,13 @@ const ChangePassword: React.FC = () => {
     const [changePassword, setChangePassword] = useState<ChangePasswordDTO>({
         email: '',
         newPassword: '',
-        oldPassword: 'NOT EMPTY'
+        oldPassword: ''
     });
 
     const [errors, setErrors] = useState<FormErrors>({
         email: false,
-        newPassword: false
+        newPassword: false,
+        oldPassword: false
       });
 
     const [user, setUser] = useState<UserResponseDTO>({
@@ -44,8 +46,8 @@ const ChangePassword: React.FC = () => {
     });
 
     const getUser = async () => {
-        console.log(email)
-        console.log(token)
+        //console.log(email)
+        //console.log(token)
         let url = backendUrl + `/auth/user/${email}`;
 
         let response: AxiosResponse<UserResponseDTO> = {} as AxiosResponse<UserResponseDTO>;
@@ -65,7 +67,6 @@ const ChangePassword: React.FC = () => {
         if (response.data) {
             //console.log("Entré!")
             setUser(response.data);
-            setChangePassword({ ...changePassword, oldPassword: user.password });
             //console.log(user)
         }
 
@@ -80,7 +81,7 @@ const ChangePassword: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!errors.email && !errors.newPassword) {
+        if (!errors.email && !errors.newPassword && !errors.oldPassword) {
             let url = backendUrl + `/auth/user/changePassword`;
     
             let response: AxiosResponse<UserResponseDTO> = await axios.patch(url, changePassword, {
@@ -115,17 +116,13 @@ const ChangePassword: React.FC = () => {
             setErrors({...errors, [type]: false});
         }
         setChangePassword({ ...changePassword, [type]: event });
-        changeOldPassword()
-    }
-
-    const changeOldPassword = () => {
     }
 
     return (
         <>
-            <div className="align-self-center d-flex flex-column justify-content-center align-items-center w-100 h-100 bg-image" style={{ backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
+            <div className="align-self-center d-flex flex-column justify-content-center align-items-center w-100 h-100 bg-image overflow-auto" style={{ backgroundImage: `url(${containerbg})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
             <NavbarBootstrap/>
-            <Card className="bg-dark text-white shadow" style={{ width: '18rem' }}>
+            <Card className="bg-dark text-white shadow mt-5" style={{ width: '18rem' }}>
                 <Card.Img variant="top" src={usrImg} alt="User Icon" className="rounded-circle align-self-center" style={{ height: '5em', width: '5em'}}/>
                 <Card.Body>
                     <Card.Title>{user.firstName.toUpperCase()} {user.lastName.toUpperCase()}</Card.Title>
@@ -148,13 +145,17 @@ const ChangePassword: React.FC = () => {
                         Input contains restricted characters
                         </Form.Control.Feedback>
                     </Form.Group>
+                    <Form.Group className="mb-3" controlId="formOldPassword">
+                        <Form.Label>Contraseña nueva</Form.Label>
+                        <Form.Control type="password" placeholder="Contraseña vieja" isInvalid={errors.oldPassword} value={changePassword.oldPassword} onChange={(e) => handleChangeType(e.target.value, 'oldPassword')}/>
+                        <Form.Control.Feedback type="invalid">
+                        Input contains restricted characters
+                        </Form.Control.Feedback>
+                    </Form.Group>
                     <Button variant="primary" type="submit">
                         Cambiar contraseña
                     </Button>
                 </Form>
-                <Button variant="outline-primary" className="mt-4" onClick={() => navigate("/user")}>
-                        Regresar
-                    </Button>
             </Card>
             </div>
         </>

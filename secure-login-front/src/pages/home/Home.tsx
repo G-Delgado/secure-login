@@ -3,7 +3,7 @@ import { useAppContext } from "../../util/AppContext";
 import backendUrl from "../../util/Config";
 import { UserResponseDTO } from "../../util/Models";
 import axios, { AxiosResponse } from "axios";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../util/Methods";
 import NavbarBootstrap from "../../components/layout/NavbarBootstrap";
@@ -13,7 +13,6 @@ import usrImg from '../../assets/user.png';
 
 const Home: React.FC = () => {
 
-    const { setEmail, setToken } = useAppContext();
     const token = getCookie('token') || useAppContext().token;
     const email = getCookie('email') || useAppContext().email;
 
@@ -29,8 +28,8 @@ const Home: React.FC = () => {
     });
 
     const getUser = async () => {
-        console.log(email)
-        console.log(token)
+        //console.log(email)
+        //console.log(token)
         let url = backendUrl + `/auth/user/${email}`;
 
         /*const headers = {
@@ -41,7 +40,7 @@ const Home: React.FC = () => {
             /*'Access-Control-Allow-Origin': '*',
         }*/
         // Add a request interceptor
-        axios.interceptors.request.use(
+        /*axios.interceptors.request.use(
             function (config) {
                 console.log('Request Headers:', config.headers); // Log the headers
                 return config;
@@ -49,9 +48,9 @@ const Home: React.FC = () => {
             function (error) {
                 return Promise.reject(error);
             }
-        );
+        );*/
 
-        axios.interceptors.response.use(
+        /*axios.interceptors.response.use(
             function (response) {
                 console.log('Response Headers:', response.headers); // Log the headers
                 return response;
@@ -59,7 +58,7 @@ const Home: React.FC = () => {
             function (error) {
                 return Promise.reject(error);
             }
-        );
+        );*/
 
 
         let response: AxiosResponse<UserResponseDTO> = {} as AxiosResponse<UserResponseDTO>;
@@ -74,9 +73,9 @@ const Home: React.FC = () => {
         }
 
         if (response.data) {
-            console.log("Entré!")
+            //console.log("Entré!")
             setUser(response.data);
-            console.log(user)
+            //console.log(user)
         }
 
 
@@ -87,13 +86,6 @@ const Home: React.FC = () => {
             getUser();
         }
     }, [email])
-
-
-    const handleLogOut = () => {
-        setEmail('');
-        setToken('');
-        navigate('/login');
-    }
 
 
 

@@ -26,7 +26,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, token, onPasswordChan
 
     return (
         <>  
-            <Card className="bg-dark text-white shadow mt-4" style={{ width: '18rem' }}>
+            <Card className="bg-dark text-white shadow mt-5" style={{ width: '18rem' }}>
                 <Card.Img variant="top" src={usrImg} alt="User Icon" className="rounded-circle align-self-center" style={{ height: '5em', width: '5em'}}/>
                 <Card.Body>
                     <Card.Title>{user.firstName.toUpperCase()} {user.lastName.toUpperCase()}</Card.Title>
@@ -40,9 +40,8 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, token, onPasswordChan
                     <ListGroup.Item className="bg-dark text-white border-secondary">{user.lastLogin.toString()}</ListGroup.Item>
                 </ListGroup>
                 <Card.Body>
-                    <Button onClick={handleNoMoreContent} className="btn-primary mb-3">Más contenido</Button>
-                    <Button onClick={() => navigate("/")} className="btn-primary mb-3">Regresar</Button>
-                    <Button onClick={handleChangePassword} className="btn-primary">Cambiar contraseña</Button>
+                    <Button onClick={handleNoMoreContent} className="mb-2" variant="outline-primary">Más contenido</Button>
+                    <Button onClick={handleChangePassword} className="" variant="outline-primary">Cambiar contraseña</Button>
                 </Card.Body>
             </Card>
         </>
