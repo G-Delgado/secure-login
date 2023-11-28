@@ -22,7 +22,7 @@ const ChangePassword: React.FC = () => {
     const [changePassword, setChangePassword] = useState<ChangePasswordDTO>({
         email: '',
         newPassword: '',
-        oldPassword:''
+        oldPassword: 'NOT EMPTY'
     });
 
     const [user, setUser] = useState<UserResponseDTO>({
@@ -97,6 +97,10 @@ const ChangePassword: React.FC = () => {
 
     const handleChangeType = (event: string, type: keyof ChangePasswordDTO) => {
         setChangePassword({ ...changePassword, [type]: event });
+        changeOldPassword()
+    }
+
+    const changeOldPassword = () => {
     }
 
     return (

@@ -9,6 +9,7 @@ import ForgotPassword from '../pages/forgotPassword/ForgotPassword';
 import ProtectedRoute from '../components/Hocs/ProtectedRoute';
 import ChangePassword from '../pages/changePassword/ChangePassword';
 
+
 const RoutesComponent: React.FC = () => {
     return (
         <>

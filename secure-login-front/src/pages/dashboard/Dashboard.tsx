@@ -17,12 +17,19 @@ const Dashboard: React.FC = () => {
 
     const getNumberOfUsers = async () => {
         let url = backendUrl + '/auth/count';
+        
+        let response: AxiosResponse<number> = {} as AxiosResponse<number>;
+    
+        try {
+            response= await axios.get(url, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }});
 
-        let response: AxiosResponse<number> = await axios.get(url, {
-            headers: {
-                Authorization: 'Bearer ' + token
-            }});
-
+        } catch (error) {
+            alert("Hubo un error al obtener el número de usuarios")
+        }
+        
         if (response.status == 200) {
             setNumberOfUsers(response.data);
         }

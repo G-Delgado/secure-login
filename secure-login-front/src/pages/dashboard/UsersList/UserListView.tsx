@@ -27,14 +27,19 @@ const UserListView: React.FC = () => {
     const loadUsers = async () => {
         let url = backendUrl + '/auth/users';
 
-        let response: AxiosResponse<UserResponseDTO[]> = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+        let response: AxiosResponse<UserResponseDTO[]> = {} as AxiosResponse<UserResponseDTO[]>;
+        try {
+             response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        } catch(error) {
+            alert("Hubo un error al obtener la lista de usuarios")
+        }
 
         if (response.status == 200) {
-            console.log(response.data);
+            //console.log(response.data);
             setUsuarios(response.data);
         }
     }
@@ -49,7 +54,7 @@ const UserListView: React.FC = () => {
     const handleRowClick = (user: UserResponseDTO) => {
         setSelectedUser(user);
         // Aquí puedes realizar acciones con el usuario seleccionado, como abrir un modal para editar
-        console.log('Usuario seleccionado:', user);
+        //console.log('Usuario seleccionado:', user);
         Swal.fire({
             title: 'Ingrese los datos para cambiar la contraseña',
             text: 'Por favor, ingrese la contraseña nueva:',
@@ -66,8 +71,8 @@ const UserListView: React.FC = () => {
           }).then(async result => {
             if (result.isConfirmed) {
               const { email, newPassword } = result.value;
-              console.log('Correo: ', email);
-              console.log('Contraseña nueva:', newPassword);
+              //console.log('Correo: ', email);
+              //console.log('Contraseña nueva:', newPassword);
 
               let url = backendUrl + `/auth/user/changePassword`;
 

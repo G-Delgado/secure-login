@@ -31,13 +31,17 @@ const Login: React.FC = () => {
       setToken("");
       setEmail("");
         event.preventDefault();
-        console.log(user);
+        //console.log(user);
 
         let url = backendUrl + "/auth/login"
+        let response: AxiosResponse<TokenDTO> = {} as AxiosResponse<TokenDTO>;
+        try {
+          response = await axios.post(url, user);
+        } catch (error) {
+          alert("Hubo un error al iniciar sesión, por favor intente de nuevo o cambie las credenciales")
+        }
 
-        let response: AxiosResponse<TokenDTO> = await axios.post(url, user);
-
-        console.log(response.data)
+        //console.log(response.data)
 
         setToken(response.data.token);
         setEmail(response.data.email);
@@ -46,10 +50,16 @@ const Login: React.FC = () => {
         createCookie("email", response.data.email, 1);
 
         let Roleurl = backendUrl + "/auth/role"
-        console.log(response.data.token)
-        let responseRole : AxiosResponse<boolean> = await axios.get(Roleurl, {headers: {
-          Authorization: "Bearer " + response.data.token
-        }})
+        //console.log(response.data.token)
+        let responseRole : AxiosResponse<boolean> = {} as AxiosResponse<boolean>;
+        try {
+          responseRole= await axios.get(Roleurl, {headers: {
+            Authorization: "Bearer " + response.data.token
+          }})
+        } catch (error) {
+          alert("Hubo un error al verificar tu rol")
+        }
+        
 
         if (responseRole.data == true) {
           navigate("/dashboard");

@@ -3,12 +3,9 @@ import { AppProvider } from './util/AppContext'
 import RoutesComponent from './routes/RoutesComponent'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import NavbarBootstrap from './components/layout/NavbarBootstrap';
-
 
 function App() {
 
-  
   return (
     <>
       

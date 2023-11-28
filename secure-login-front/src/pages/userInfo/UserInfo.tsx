@@ -6,7 +6,6 @@ import axios, { AxiosResponse } from "axios";
 import UserInfoCard from "../../components/UserInfoCard";
 import containerbg from '../../assets/liquid-cheese.png';
 import { getCookie } from "../../util/Methods";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import NavbarBootstrap from "../../components/layout/NavbarBootstrap";
 
@@ -26,38 +25,11 @@ const UserInfo: React.FC = () => {
     });
 
     const getUser = async () => {
-        console.log(email)
-        console.log(token)
+        //console.log(email)
+        //console.log(token)
         let url = backendUrl + `/auth/user/${email}`;
 
-        /*const headers = {
-            'Authorization': 'Bearer ' + token,
-            'Connection': 'keep-alive',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept': '*',
-            /*'Access-Control-Allow-Origin': '*',
-        }*/
-        // Add a request interceptor
-        /*axios.interceptors.request.use(
-            function (config) {
-                console.log('Request Headers:', config.headers); // Log the headers
-                return config;
-            },
-            function (error) {
-                return Promise.reject(error);
-            }
-        );*/
-
-        /*axios.interceptors.response.use(
-            function (response) {
-                console.log('Response Headers:', response.headers); // Log the headers
-                return response;
-            },
-            function (error) {
-                return Promise.reject(error);
-            }   
-        );*/
-
+        
 
         let response: AxiosResponse<UserResponseDTO> = {} as AxiosResponse<UserResponseDTO>;
         try {
@@ -67,8 +39,7 @@ const UserInfo: React.FC = () => {
                 }
             });
         } catch (error) {
-            //console.log("PUTA MADRE!")
-            //console.log(error)
+            alert("Hubo un error al obtener tu información")
         }
 
         //console.log(response.data.firstName)

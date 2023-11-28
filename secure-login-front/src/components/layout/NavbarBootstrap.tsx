@@ -11,16 +11,21 @@ const NavbarBootstrap: React.FC = () => {
   useEffect(() => {
     let getIsAdmin = async () => {
       let url = backendUrl + "/auth/role";
-      let response: AxiosResponse<boolean> = await axios.get(url, {
-        headers: {
-          Authorization: 'Bearer ' + getCookie('token')
-        }
-      })
+      let response: AxiosResponse<boolean> = {} as AxiosResponse<boolean>;
+      try {
+        response = await axios.get(url, {
+          headers: {
+            Authorization: 'Bearer ' + getCookie('token')
+          }
+        })
+      } catch (error) {
+        alert("Hubo un error al verificar tu rol")
+      }
 
       
       if (response.status === 200) {
         setAdmin(response.data);
-        console.log(response.data)
+        //console.log(response.data)
       }
     }
     getIsAdmin();

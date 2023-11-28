@@ -47,8 +47,12 @@ const SignUp: React.FC = () => {
             })
         } else {
             let url = backendUrl + '/auth/signup';   
-
-            let response : AxiosResponse<TokenDTO> = await axios.post(url, user);
+            let response: AxiosResponse<TokenDTO> = {} as AxiosResponse<TokenDTO>;
+            try {
+                response= await axios.post(url, user);
+            } catch (error) {
+                alert("Hubo un error al crear la cuenta, por favor intente de nuevo o cambie las credenciales")
+            }
             console.log(response.data)
             if (response.data) {
                 Swal.fire({

@@ -70,10 +70,8 @@ const Home: React.FC = () => {
                 }
             });
         } catch (error) {
-            console.log(error)
+            alert("Hubo un error al obtener tu información")
         }
-
-        console.log(response.data.firstName)
 
         if (response.data) {
             console.log("Entré!")
