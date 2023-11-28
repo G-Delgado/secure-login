@@ -7,7 +7,6 @@ import com.login.secureloginbackend.dto.response.TokenDTO;
 import com.login.secureloginbackend.dto.response.UserResponseDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,7 +24,7 @@ public interface UserAPI {
     TokenDTO signUp(@Valid @RequestBody SignUpDTO signUpDTO);
 
     @GetMapping("/user/{email}")
-    UserResponseDTO getUser(@PathVariable String email);
+    ResponseEntity<UserResponseDTO> getUser(@PathVariable String email);
 
     @DeleteMapping("/user/{email}")
     ResponseEntity<String> deleteUser(@PathVariable String email,@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
@@ -38,5 +37,9 @@ public interface UserAPI {
 
     @GetMapping("/role")
     ResponseEntity<Boolean> isAdmin(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+
+    @GetMapping("/count")
+    ResponseEntity<Long> countUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+
 }
 

@@ -82,7 +82,14 @@ public class TokenService {
 
     public <T> T getClaim(String token, Function<Claims,T> claimsResolver){
         final Claims claims = getAllClaims(token);
+        //System.out.println(claims.get("scope"));
         return claimsResolver.apply(claims);
+    }
+
+    public <T> Object getRole (String token, Function<Claims,T> claimsResolver){
+        final Claims claims = getAllClaims(token);
+        //System.out.println(claims.get("scope"));
+        return claims.get("scope");
     }
 
     public Date extractExpiration(String token){

@@ -1,9 +1,6 @@
 package com.login.secureloginbackend.util;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKeyFactory;
@@ -15,6 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 
 
 
+@Service
 public class PasswordEncodeService  implements PasswordEncoder {
 
     @Override

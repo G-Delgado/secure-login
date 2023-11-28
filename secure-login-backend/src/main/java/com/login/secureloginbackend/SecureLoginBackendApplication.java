@@ -1,19 +1,9 @@
 package com.login.secureloginbackend;
 
-import com.login.secureloginbackend.model.Role;
-import com.login.secureloginbackend.model.UserModel;
-import com.login.secureloginbackend.repository.UserRepository;
-import com.login.secureloginbackend.util.PasswordEncodeService;
-import lombok.SneakyThrows;
-import org.springframework.boot.CommandLineRunner;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @SpringBootApplication
 
@@ -22,60 +12,4 @@ public class SecureLoginBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SecureLoginBackendApplication.class, args);
 	}
-
-	@SneakyThrows
-	@Bean
-	CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncodeService encoder){
-
-		UserModel admin = UserModel.builder()
-				.userId(UUID.randomUUID())
-				.firstName("Admin")
-				.lastName("Admin")
-				.email("admin@hotmail.com")
-				.role(Role.ADMIN)
-				.password(encoder.encode("admin"))
-				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
-
-				.build();
-
-		UserModel user1 = UserModel.builder()
-				.userId(UUID.randomUUID())
-				.firstName("John")
-				.lastName("Doe")
-				.email("jd@hotmail.com")
-				.role(Role.USER)
-				.password(encoder.encode("123456"))
-				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
-				.build();
-
-		UserModel user2 = UserModel.builder()
-				.userId(UUID.randomUUID())
-				.firstName("Karla")
-				.lastName("Doe")
-				.email("kd@hotmail.com")
-				.role(Role.USER)
-				.password(encoder.encode("admin123"))
-				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
-				.build();
-
-		UserModel user3 = UserModel.builder()
-				.userId(UUID.randomUUID())
-				.firstName("Carlos")
-				.lastName("Doe")
-				.email("cd@hotmail.com")
-				.role(Role.USER)
-				.password(encoder.encode("admin123456"))
-				.lastLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
-				.build();
-
-		return args -> {
-			userRepository.save(admin);
-			userRepository.save(user1);
-			userRepository.save(user2);
-			userRepository.save(user3);
-		};
-
-	}
-
-
 }

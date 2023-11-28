@@ -31,8 +31,8 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public UserResponseDTO getUser(String email) {
-        return userService.getUser(email);
+    public ResponseEntity<UserResponseDTO> getUser(String email) {
+        return ResponseEntity.ok(userService.getUser(email));
     }
 
     @Override
@@ -57,7 +57,12 @@ public class UserController implements UserAPI {
 
     @Override
     public ResponseEntity<Boolean> isAdmin(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        return ResponseEntity.ok(userService.validateUserRole(token));
+        return ResponseEntity.ok(userService.validateUserRoleIsAdmin(token));
+    }
+
+    @Override
+    public ResponseEntity<Long> countUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return ResponseEntity.ok(userService.countUsers(token));
     }
 
 

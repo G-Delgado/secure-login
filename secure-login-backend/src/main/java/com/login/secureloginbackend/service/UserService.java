@@ -73,6 +73,7 @@ public class UserService {
         //Codificar la contraseña
         userModel.setPassword(encoder.encode(user.password()));
 
+
         //Guardar el usuario
         userRepository.save(userModel);
 
@@ -86,14 +87,35 @@ public class UserService {
         return userMapper.fromUser(userRepository.findUserModelByEmail(email).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    public boolean validateUserRole(String token){
+    public Long countUsers(String token){
+        if(!validateAdminRole(token.split(" ")[1].trim())){
+            throw new RuntimeException("User not authorized");
+        }
+        return userRepository.count();
+    }
+
+    private boolean validateUserRole(String token){
         String userRole = tokenService.getClaim(token,Claims::getSubject);
         return userRole.equals("ADMIN");
     }
 
+    private boolean validateAdminRole(String token){
+        System.out.println(token);
+        Object userRole = tokenService.getRole(token,Claims::getSubject);
+        System.out.println((String) userRole.toString());
+        return userRole.toString().equals("ADMIN");
+    }
+
+    public Boolean validateUserRoleIsAdmin(String token){
+        UserModel user = userRepository.findUserModelByRole(Role.ADMIN).orElseThrow(() -> new RuntimeException("Admin not found"));
+        System.out.println(token.split(" ")[1].trim());
+        String email = tokenService.extractUsername(token.split(" ")[1].trim());
+        return user.getEmail().equals(email);
+    }
+
     public ResponseEntity<String> deleteUser(String email, String token) {
         //Para hacer esto necestita ser admin
-        if (!validateUserRole(token)){
+        if (!validateAdminRole(token.split(" ")[1].trim())){
             throw new RuntimeException("User not authorized");
         }
         userRepository.delete(userRepository.findUserModelByEmail(email).orElseThrow(() -> new RuntimeException("User not found")));
@@ -103,14 +125,17 @@ public class UserService {
 
     private boolean validateUserOwner(String token, String email){
         String userEmail = tokenService.getClaim(token,Claims::getSubject);
+        System.out.println("Validando dueño");
+        System.out.println(userEmail);
         return userEmail.equals(email);
     }
 
     @Transactional
     public UserResponseDTO changePassword(ChangePasswordDTO changePasswordDTO, String token) {
         //Para cambiar la de cualquiera necestia ser admin
-
-        if (!validateUserRole(token) && !validateUserOwner(token,changePasswordDTO.email())){
+        System.out.println("Entra?");
+        token = token.split(" ")[1].trim();
+        if (!validateAdminRole(token) && !validateUserOwner(token,changePasswordDTO.email())){
             //Si no es admin y tampoco es el propietario del usuario
             throw new RuntimeException("User not authorized");
         }
@@ -122,12 +147,12 @@ public class UserService {
         //Codificar la contraseña
         user.ifPresent(userModel -> userModel.setPassword(encoder.encode(changePasswordDTO.newPassword())));
 
-        if (!validateUserRole(token) && validateUserOwner(token,changePasswordDTO.email())){
+        if (!validateAdminRole(token) && validateUserOwner(token,changePasswordDTO.email())){
             //Si no es admin y es el propietario del usuario
             userRepository.updatePassword(changePasswordDTO.email(), user.get().getPassword());
         }
 
-        if (validateUserRole(token)){
+        if (validateAdminRole(token)){
             //Si es admin
             userRepository.updatePassword(changePasswordDTO.email(), user.get().getPassword());
         }
@@ -136,7 +161,7 @@ public class UserService {
     }
 
     public List<UserResponseDTO> getAllUsers(String token){
-        if(!validateUserRole(token)){
+        if(!validateAdminRole(token.split(" ")[1].trim())){
             throw new RuntimeException("User not authorized");
         }
         List<UserModel> list = userRepository.findAll();
