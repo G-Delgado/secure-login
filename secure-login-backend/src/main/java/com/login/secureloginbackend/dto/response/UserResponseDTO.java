@@ -5,6 +5,11 @@ import lombok.Data;
 
 import java.util.UUID;
 
+/**
+ * This class is a DTO that represents the response of the user
+ * @version 1.0
+ * @since 1.0
+ */
 @Data
 @Builder
 public class UserResponseDTO {

@@ -14,6 +14,11 @@ import java.security.spec.InvalidKeySpecException;
 @Service
 public class PasswordEncodeService  implements PasswordEncoder {
 
+    /**
+     * Este metodo se encarga de encriptar la contraseña
+     * @param rawPassword contraseña sin encriptar
+     * @return contraseña encriptada
+     */
     @Override
     public String encode(CharSequence rawPassword) {
         try{
@@ -40,6 +45,12 @@ public class PasswordEncodeService  implements PasswordEncoder {
         return "Error";
     }
 
+    /**
+     * Este metodo se encarga de comparar la contraseña sin encriptar con la contraseña encriptada
+     * @param rawPassword contraseña sin encriptar
+     * @param encodedPassword contraseña encriptada
+     * @return true si la contraseña sin encriptar es igual a la contraseña encriptada, false de lo contrario
+     */
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
         try{
@@ -79,7 +90,11 @@ public class PasswordEncodeService  implements PasswordEncoder {
     }
 
 
-
+    /**
+     * Este metodo se encarga de generar un salt aleatorio
+     * @return arreglo de bytes que representa el salt
+     * @throws NoSuchAlgorithmException - si el algoritmo no existe
+     */
     private  byte[] genSalt() throws NoSuchAlgorithmException {
         // SHA1PRNG nombre del algoritmo RNG (Random Number Generator) que genera el secureRandom
         SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
@@ -90,6 +105,11 @@ public class PasswordEncodeService  implements PasswordEncoder {
         return salt;
     }
 
+    /**
+     * Este metodo se encarga de convertir un arreglo de bytes a un numero hexadecimal
+     * @param bytes arreglo de bytes
+     * @return numero hexadecimal
+     */
     private  String toHex(byte[] bytes) {
         //convierte un arreglo de bytes a un numero hexadecimal positivo
         BigInteger bi = new BigInteger(1, bytes);
@@ -106,7 +126,11 @@ public class PasswordEncodeService  implements PasswordEncoder {
         }
     }
 
-
+    /**
+     * Este método se encarga de convertir un numero hexadecimal a un arreglo de bytes
+     * @param hex numero hexadecimal
+     * @return arreglo de bytes
+     */
     private  byte[] fromHex(String hex) {
         //convierte un numero hexadecimal a un arreglo de bytes
         byte[] bytes = new byte[hex.length() / 2];

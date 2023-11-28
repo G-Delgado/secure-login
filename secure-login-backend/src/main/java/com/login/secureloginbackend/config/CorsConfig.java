@@ -11,8 +11,16 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class is used to configure the CORS policy for the application.
+ */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
+
+    /**
+     * This method is used to configure the CORS policy for the application.
+     * @return - CORS filter
+     */
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -30,6 +38,10 @@ public class CorsConfig implements WebMvcConfigurer {
         return new CorsFilter(source);
     }
 
+    /**
+     * This method is used to configure the CORS policy for the application.
+     * @param registry - CORS registry
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

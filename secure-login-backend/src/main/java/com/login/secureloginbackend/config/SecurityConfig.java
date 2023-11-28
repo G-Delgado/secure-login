@@ -56,6 +56,11 @@ public class SecurityConfig {
     private final AuthenticationProvider authProvider;
 
 
+    /**
+     * @param http - HttpSecurity object to configure the security
+     * @return - SecurityFilterChain with the configuration of the security
+     * @throws Exception - Exception if the configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception{
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);

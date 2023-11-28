@@ -18,6 +18,10 @@ public class DatabaseInitializerConfig {
 
     private UserRepository userRepository; // Suponiendo que tienes un repositorio para usuarios
     private PasswordEncodeService passwordEncoder; // Suponiendo que tienes un servicio para encriptar contraseñas
+
+    /**
+     * Este método se ejecuta cuando la aplicación se inicia
+     */
     @PostConstruct
     public void initialize() {
         if (!adminUserExists()) {
@@ -25,11 +29,18 @@ public class DatabaseInitializerConfig {
         }
     }
 
+    /**
+     * Este método verifica si existe un usuario administrador en la base de datos
+     * @return true si existe, false si no existe
+     */
     private boolean adminUserExists() {
         return userRepository.findUserModelByRole(Role.ADMIN).isPresent();
 
     }
 
+    /**
+     * Este método crea un usuario administrador en la base de datos
+     */
     private void createAdminUser() {
         UserModel adminUser = UserModel.builder()
                 .userId(UUID.randomUUID())
