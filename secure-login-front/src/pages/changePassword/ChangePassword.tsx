@@ -1,4 +1,4 @@
-import { Button, Card, Form, Navbar } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import containerbg from '../../assets/liquid-cheese3.png';
 import { getCookie } from "../../util/Methods";
 import { useAppContext } from "../../util/AppContext";
@@ -93,7 +93,7 @@ const ChangePassword: React.FC = () => {
             if (response.status === 200) {
                 Swal.fire({
                     title: 'Contraseña cambiada con éxito',
-                    text: 'Por favor, inicia sesión nuevamente',
+                    text: 'Por favor, recuerda iniciar sesión con tu nueva contraseña',
                     icon: 'success',
                     confirmButtonText: 'Ok'
                 }).then((result) => {
